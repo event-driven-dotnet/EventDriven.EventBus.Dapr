@@ -10,6 +10,9 @@ The [Dapr .NET SDK](https://github.com/dapr/dotnet-sdk) provides an API to perfo
 
 The purpose of the **Dapr Event Bus** project is to provide a thin abstraction layer over Dapr pub/sub so that applications may publish events and subscribe to topics _without any knowledge of Dapr_. This allows for better testability and flexibility, especially for worker services that do not natively include an HTTP stack.
 
+## Packages
+- **DaprEventBus.Abstractions**: https://www.nuget.org/packages/DaprEventBus.Abstractions/1.0.0-beta
+- **DaprEventBus.Dapr**: https://www.nuget.org/packages/DaprEventBus.Dapr/1.0.0-beta
 ## Usage
 
 1. In both the _publisher_ and _subscriber_, you need to register the **Dapr Event Bus** with DI by calling `services.AddDaprEventBus` in `Startup.ConfigureServices`.

@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0-beta</Version>
+    <Description>An event bus abstraction layer.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>event-bus.png</PackageIcon>
+    <Company>Dapr .NET Extensions</Company>
+    <Authors>Tony Sneed</Authors>
+    <PackageProjectUrl>https://github.com/dapr-dotnet-extensions/dapr-event-bus</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dapr-dotnet-extensions/dapr-event-bus.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>event-bus</PackageTags>
+    <PackageReleaseNotes>https://github.com/dapr-dotnet-extensions/dapr-event-bus/releases/tag/v1.0.0-beta</PackageReleaseNotes>
+    <PackageId>DaprEventBus.Abstractions</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -11,5 +24,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\Users\Tony\Source\DaprEventBus\src\EventBus.Abstractions\EventBus.Abstractions.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\event-bus.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
