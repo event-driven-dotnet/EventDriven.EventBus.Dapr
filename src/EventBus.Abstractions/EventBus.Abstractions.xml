@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EventBus.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:EventBus.Abstractions.EventBus">
+            <inheritdoc/>
+        </member>
+        <member name="P:EventBus.Abstractions.EventBus.Topics">
+            <inheritdoc/>
+        </member>
+        <member name="M:EventBus.Abstractions.EventBus.Subscribe(EventBus.Abstractions.IIntegrationEventHandler,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:EventBus.Abstractions.EventBus.PublishAsync``1(``0,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:EventBus.Abstractions.IEventBus">
+            <summary>
+            Provides a way for systems to communicate without knowing about each other.
+            </summary>
+        </member>
+        <member name="P:EventBus.Abstractions.IEventBus.Topics">
+            <summary>
+            List of topics with associated event handlers.
+            </summary>
+        </member>
+        <member name="M:EventBus.Abstractions.IEventBus.Subscribe(EventBus.Abstractions.IIntegrationEventHandler,System.String)">
+            <summary>
+            Register a subscription with an event handler.
+            </summary>
+            <param name="handler">Subscription event handler.</param>
+            <param name="topic">Subscription topic.</param>
+        </member>
+        <member name="M:EventBus.Abstractions.IEventBus.PublishAsync``1(``0,System.String)">
+            <summary>
+            Publish an event asynchronously.
+            </summary>
+            <typeparam name="TIntegrationEvent">Integration event type.</typeparam>
+            <param name="event">Integration event.</param>
+            <param name="topic">Publication topic.</param>
+            <returns>Task that will complete when the operation has completed.</returns>
+        </member>
+        <member name="T:EventBus.Abstractions.IIntegrationEvent">
+            <summary>
+            Event for communicating information between systems.
+            </summary>
+        </member>
+        <member name="P:EventBus.Abstractions.IIntegrationEvent.Id">
+            <summary>
+            Unique event identifier.
+            </summary>
+        </member>
+        <member name="P:EventBus.Abstractions.IIntegrationEvent.CreationDate">
+            <summary>
+            Event creation date.
+            </summary>
+        </member>
+        <member name="T:EventBus.Abstractions.IIntegrationEventHandler">
+            <summary>
+            Handler for integration events.
+            </summary>
+        </member>
+        <member name="P:EventBus.Abstractions.IIntegrationEventHandler.Topic">
+            <summary>
+            Handler topic.
+            </summary>
+        </member>
+        <member name="M:EventBus.Abstractions.IIntegrationEventHandler.HandleAsync(EventBus.Abstractions.IIntegrationEvent)">
+            <summary>
+            Handle an event asynchronously.
+            </summary>
+            <param name="event">Integration event.</param>
+            <returns>Task that will complete when the operation has completed.</returns>
+        </member>
+        <member name="T:EventBus.Abstractions.IIntegrationEventHandler`1">
+            <summary>
+            Handler for integration events.
+            </summary>
+            <typeparam name="TIntegrationEvent">Integration event type.</typeparam>
+        </member>
+        <member name="M:EventBus.Abstractions.IIntegrationEventHandler`1.HandleAsync(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="T:EventBus.Abstractions.IntegrationEvent">
+            <inheritdoc/>
+        </member>
+        <member name="P:EventBus.Abstractions.IntegrationEvent.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:EventBus.Abstractions.IntegrationEvent.CreationDate">
+            <inheritdoc/>
+        </member>
+        <member name="T:EventBus.Abstractions.IntegrationEventHandler`1">
+            <inheritdoc/>
+        </member>
+        <member name="M:EventBus.Abstractions.IntegrationEventHandler`1.#ctor">
+            <summary>
+            IntegrationEventHandler constructor.
+            </summary>
+        </member>
+        <member name="M:EventBus.Abstractions.IntegrationEventHandler`1.#ctor(System.String)">
+            <summary>
+            IntegrationEventHandler constructor.
+            </summary>
+            <param name="topic">Event handler topic.</param>
+        </member>
+        <member name="P:EventBus.Abstractions.IntegrationEventHandler`1.Topic">
+            <summary>
+            Event handler topic.
+            </summary>
+        </member>
+        <member name="M:EventBus.Abstractions.IntegrationEventHandler`1.HandleAsync(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:EventBus.Abstractions.IntegrationEventHandler`1.HandleAsync(EventBus.Abstractions.IIntegrationEvent)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>
