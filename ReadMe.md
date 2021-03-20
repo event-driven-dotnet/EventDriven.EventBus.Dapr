@@ -11,8 +11,8 @@ The [Dapr .NET SDK](https://github.com/dapr/dotnet-sdk) provides an API to perfo
 The purpose of the **Dapr Event Bus** project is to provide a thin abstraction layer over Dapr pub/sub so that applications may publish events and subscribe to topics _without any knowledge of Dapr_. This allows for better testability and flexibility, especially for worker services that do not natively include an HTTP stack.
 
 ## Packages
-- **DaprEventBus.Abstractions**: https://www.nuget.org/packages/DaprEventBus.Abstractions/1.0.0-beta
-- **DaprEventBus.Dapr**: https://www.nuget.org/packages/DaprEventBus.Dapr/1.0.0-beta
+- [DaprEventBus.Abstractions](https://www.nuget.org/packages/DaprEventBus.Abstractions)
+- [DaprEventBus.Dapr](https://www.nuget.org/packages/DaprEventBus.Dapr)
 ## Usage
 
 1. In both the _publisher_ and _subscriber_, you need to register the **Dapr Event Bus** with DI by calling `services.AddDaprEventBus` in `Startup.ConfigureServices`.
@@ -81,7 +81,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
 
 5. Lastly, in `Startup.Configure` call `app.UseDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
    - Make sure to add parameters to `Startup.Configure` to inject each handler you wish to use.
-   - For example, to add the weather forecast handler, you much add a `WeatherForecastEventHandler` parameter to the `Configure` method.
+   - For example, to add the weather forecast handler, you must add a `WeatherForecastEventHandler` parameter to the `Configure` method.
 
     ```csharp
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
@@ -100,22 +100,16 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
 
 The **samples** folder contains two sample applications which use the Dapr Event Bus: **SimplePubSub** and **DuplexPubSub**.
 
-1. The **SimplePubSub** sample contains two projects: **Publisher** and **Subscriber**.
-   - The **Publisher** project uses a _Worker Service_ template with a `Worker` class that runs a continuous loop, pausing every 5 seconds to publish a `WeatherForecastEvent` to the event bus.
-   - The **Subscriber** project subscribes to `DaprEventBus` with a `WeatherForecastEventHandler` that sets the `WeatherForecasts` property of `WeatherForecastRepository`with the `WeatherForecasts` property of the `WeatherForecastEvent`.
-2. The **DuplexPubSub** sample contains four projects: **Frontend**, **Backend**, **WeatherGenerator** and **Common**.
-   - The **Common** project is a class library containing events and models, which are shared among the other projects.
-   - The **Frontend** project is a Web UI that retrieves weather forecasts from the Backend.
-   - The **Backend** project publishes a `WeatherForecastRequestedEvent` which is subscribed to by the **WeatherGenerator** project. The Backend subscribes to `WeatherForecastGeneratedEvent` and sets the `WeatherForecasts` property of the `WeatherForecastRepository` when the `HandleAsync` method of the `WeatherForecastGeneratedEventHandler` is called.
-   - The **WeatherGenerator** project handles a `WeatherForecastRequestedEvent` by creating weather forecasts with a delay to simulate latency. Then it publishes a `WeatherForecastGeneratedEvent`, which is handled by the Backend.
+1. The **SimplePubSub** sample contains two projects: **Publisher** and **Subscriber**. Every 5 seconds the _Publisher_ creates a new set of weather forecasts and publishes them to the event bus. The _Subscriber_ subscribes to the event by setting the `WeatherForecasts` property of `WeatherForecastRepository`, which is returned by the `Get` method of `WeatherForecastController`.
+2. The **DuplexPubSub** sample contains four projects: **Frontend**, **Backend**, **WeatherGenerator** and **Common**. The _Backend_ publishes a `WeatherForecastRequestedEvent` to the event bus in the `Get` method of the `WeatherForecastController`. The _WebGenerator_ handles the event by creating a set of weather forecasts and publishing them to the event bus with a `WeatherForecastGeneratedEvent`, which is handled by the _Backend_ by setting the `WeatherForecasts` property of the `WeatherForecastRepository`, so that new weather forecasts are returned by the `WeatherForecastController`. The _Frontend_ initiates the pub/sub process by using an `HttpClient` to call the _Backend_ when the user clicks the "Get Weather Forecasts" button.
 
 ## Dapr Event Bus Packages
 
-The Dapr Event Bus consists of two NuGet packages: **EventBus.Abstractions** and **EventBus.Dapr**.
+The Dapr Event Bus consists of two NuGet packages: [DaprEventBus.Abstractions](https://www.nuget.org/packages/DaprEventBus.Abstractions) and [DaprEventBus.Dapr](https://www.nuget.org/packages/DaprEventBus.Dapr).
 
-### EventBus.Abstractions
+### DaprEventBus.Abstractions
 
-The **EventBus.Abstractions** package includes interfaces and abstract classes which provide an abstraction layer for interacting with any messsaging subsystem. This allows you to potentially exchange the [Dapr](https://dapr.io/) implementation with another one, such as [NServiceBus](https://particular.net/nservicebus) or [MassTransit](https://masstransit-project.com/), _without altering application code_.
+The **DaprEventBus.Abstractions** package includes interfaces and abstract classes which provide an abstraction layer for interacting with any messsaging subsystem. This allows you to potentially exchange the [Dapr](https://dapr.io/) implementation with another one, such as [NServiceBus](https://particular.net/nservicebus) or [MassTransit](https://masstransit-project.com/), _without altering application code_.
 
 This package contains an `IEventBus` interface implemented by an `EventBus` abstract class.
 
@@ -168,9 +162,9 @@ public abstract record IntegrationEvent : IIntegrationEvent
 }
 ```
 
-### EventBus.Dapr
+### DaprEventBus.Dapr
 
-The **EventBus.Dapr** package has a `DaprEventBus` class that extends `EventBus` by injecting `DaprClient`. It also injects `DaprEventBusOptions` for the pubsub component name needed by `DaprClient.PublishAsync`. The event topic defaults to the _type name_ of the the event, but it can also be supplied explicitly.
+The **DaprEventBus.Dapr** package has a `DaprEventBus` class that extends `EventBus` by injecting `DaprClient`. It also injects `DaprEventBusOptions` for the pubsub component name needed by `DaprClient.PublishAsync`. The event topic defaults to the _type name_ of the the event, but it can also be supplied explicitly.
 
 ```csharp
 public class DaprEventBus : EventBus
