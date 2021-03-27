@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/DaprEventBus.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "group": "test",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/DaprEventBus.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
