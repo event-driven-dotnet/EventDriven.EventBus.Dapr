@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Dapr.Client;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -30,7 +31,7 @@ namespace Microsoft.AspNetCore.Builder
             // Get services
             var logger = app.ApplicationServices.GetRequiredService<ILogger<DaprEventBus>>();
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            var serializerOptions = app.ApplicationServices.GetRequiredService<JsonSerializerOptions>();
+            var daprClient = app.ApplicationServices.GetRequiredService<DaprClient>();
             var eventBusOptions = app.ApplicationServices.GetRequiredService<IOptions<DaprEventBusOptions>>();
 
             // Configure event bus
@@ -58,7 +59,7 @@ namespace Microsoft.AspNetCore.Builder
                 {
                     foreach (var handler in handlers)
                     {
-                        var @event = await GetEventFromRequestAsync(context, handler, serializerOptions);
+                        var @event = await GetEventFromRequestAsync(context, handler, daprClient.JsonSerializerOptions);
                         logger.LogInformation($"Handling event: {@event.Id}");
                         await handler.HandleAsync(@event);
                     }

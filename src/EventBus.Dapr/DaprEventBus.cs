@@ -29,11 +29,7 @@ namespace EventBus.Dapr
         {
             if (@event is null) throw new ArgumentNullException(nameof(@event));
             topic = topic ?? @event.GetType().Name;
-
-            // We need to make sure that we pass the concrete type to PublishEventAsync,
-            // which can be accomplished by casting the event to dynamic. This ensures
-            // that all event fields are properly serialized.
-            await _dapr.PublishEventAsync(_options.Value.PubSubName, topic, (dynamic)@event);
+            await _dapr.PublishEventAsync(_options.Value.PubSubName, topic, @event);
         }
     }
 }

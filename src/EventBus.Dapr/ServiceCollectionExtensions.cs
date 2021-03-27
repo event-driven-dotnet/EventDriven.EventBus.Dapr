@@ -17,12 +17,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The original <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
         public static IServiceCollection AddDaprEventBus(this IServiceCollection services, string pubSubName)
         {
-            services.AddDaprClient();
-            services.AddSingleton(new JsonSerializerOptions()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
-            });
+            services.AddDaprClient(builder =>
+                builder.UseJsonSerializationOptions(new JsonSerializerOptions()
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true,
+                }));
             services.AddSingleton<IEventBus, DaprEventBus>();
             services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName);
             return services;
