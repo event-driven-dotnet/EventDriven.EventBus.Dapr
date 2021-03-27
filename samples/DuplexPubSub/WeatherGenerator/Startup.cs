@@ -34,11 +34,16 @@ namespace WeatherGenerator
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             WeatherForecastRequestedEventHandler forecastRequestedEventHandler)
         {
-            // Use Dapr service bus
-            app.UseDaprEventBus(eventBus =>
+            app.UseRouting();
+            app.UseCloudEvents();
+            app.UseEndpoints(endpoints =>
             {
-                // Subscribe with a handler
-                eventBus.Subscribe(forecastRequestedEventHandler);
+                // Map Dapr service bus
+                endpoints.MapDaprEventBus(eventBus =>
+                {
+                    // Subscribe with a handler
+                    eventBus.Subscribe(forecastRequestedEventHandler);
+                });
             });
         }
     }

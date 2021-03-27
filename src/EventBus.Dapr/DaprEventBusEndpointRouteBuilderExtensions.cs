@@ -1,54 +1,52 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using EventBus.Abstractions;
-using EventBus.Dapr;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dapr.Client;
+using EventBus.Abstractions;
+using EventBus.Dapr;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Builder
 {
     /// <summary>
-    /// Provides extension methods for <see cref="T:Microsoft.AspNetCore.Builder" />.
+    /// Provides extension methods for <see cref="IEndpointRouteBuilder" />.
     /// </summary>
-    public static class ApplicationBuilderExtensions
+    public static class DaprEventBusEndpointRouteBuilderExtensions
     {
         /// <summary>
-        /// Adds DaprEventBus to the middleware pipeline.
+        /// Maps endpoints that will handle requests for DaprEventBus subscriptions.
         /// </summary>
-        /// <param name="app">An <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder" />.</param>
+        /// <param name="endpoints">The <see cref="IEndpointRouteBuilder" />.</param>
         /// <param name="configure">The original <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder" />.</param>
-        /// <returns></returns>
-        internal static IApplicationBuilder UseDaprEventBus(this IApplicationBuilder app, 
+        /// <returns>An <see cref="DaprEventBusEndpointConventionBuilder"/> for endpoints associated with DaprEventBus subscriptions.</returns>
+        public static DaprEventBusEndpointConventionBuilder MapDaprEventBus(this IEndpointRouteBuilder endpoints,
             Action<IEventBus> configure = null)
         {
-            app.UseRouting();
+            if (endpoints is null)
+                throw new ArgumentNullException(nameof(endpoints));
 
-            // Get services
-            var logger = app.ApplicationServices.GetRequiredService<ILogger<DaprEventBus>>();
-            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            var daprClient = app.ApplicationServices.GetRequiredService<DaprClient>();
-            var eventBusOptions = app.ApplicationServices.GetRequiredService<IOptions<DaprEventBusOptions>>();
+            var logger = endpoints.ServiceProvider.GetService<ILogger<DaprEventBus>>();
+            var eventBus = endpoints.ServiceProvider.GetService<IEventBus>();
+            var daprClient = endpoints.ServiceProvider.GetService<DaprClient>();
+            var eventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
 
             // Configure event bus
+            logger.LogInformation($"Configuring event bus ...");
             configure?.Invoke(eventBus);
 
-            // Map endpoints
-            app.UseCloudEvents();
-            app.UseEndpoints(endpoints =>
+            endpoints.MapSubscribeHandler();
+            IEndpointConventionBuilder builder = null;
+            foreach (var topic in eventBus.Topics)
             {
-                endpoints.MapSubscribeHandler();
-                foreach (var topic in eventBus.Topics)
-                {
-                    logger.LogInformation($"Mapping Post for topic: {topic.Key}");
-                    endpoints.MapPost(topic.Key, HandleMessage)
-                        .WithTopic(eventBusOptions.Value.PubSubName, topic.Key);
-                }
-            });
+                logger.LogInformation($"Mapping Post for topic: {topic.Key}");
+                builder = endpoints.MapPost(topic.Key, HandleMessage)
+                    .WithTopic(eventBusOptions.Value.PubSubName, topic.Key);
+            }
 
             async Task HandleMessage(HttpContext context)
             {
@@ -84,7 +82,7 @@ namespace Microsoft.AspNetCore.Builder
                 return (IIntegrationEvent)value;
             }
 
-            return app;
+            return new DaprEventBusEndpointConventionBuilder(builder);
         }
     }
 }

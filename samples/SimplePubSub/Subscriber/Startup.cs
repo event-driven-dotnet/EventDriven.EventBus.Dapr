@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Subscriber.Events;
 using Subscriber.Models;
@@ -38,7 +39,7 @@ namespace Subscriber
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger,
             WeatherForecastEventHandler forecastEventHandler)
         {
             if (env.IsDevelopment())
@@ -49,17 +50,15 @@ namespace Subscriber
             }
 
             app.UseRouting();
-
+            app.UseCloudEvents();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
-
-            // Use Dapr service bus
-            app.UseDaprEventBus(eventBus =>
-            {
-                // Subscribe with a handler
-                eventBus.Subscribe(forecastEventHandler);
+                endpoints.MapDaprEventBus(eventBus =>
+                {
+                    // Subscribe with a handler
+                    eventBus.Subscribe(forecastEventHandler);
+                });
             });
         }
     }

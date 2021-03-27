@@ -79,7 +79,8 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     }
     ```
 
-5. Lastly, in `Startup.Configure` call `app.UseDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
+5. Lastly, in `Startup.Configure` in `app.UseEndpoints` call `endpoints.MapDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
+   - Also call `app.UseRouting` and `app.UseCloudEvents`.
    - Make sure to add parameters to `Startup.Configure` to inject each handler you wish to use.
    - For example, to add the weather forecast handler, you must add a `WeatherForecastEventHandler` parameter to the `Configure` method.
 
@@ -87,11 +88,16 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
         WeatherForecastEventHandler forecastEventHandler)
     {
-        // Use Dapr Event Bus
-        app.UseDaprEventBus(eventBus =>
+        app.UseRouting();
+        app.UseCloudEvents();
+        app.UseEndpoints(endpoints =>
         {
-            // Subscribe to events using an event handler
-            eventBus.Subscribe(forecastEventHandler);
+            // Map Dapr service bus
+            endpoints.MapDaprEventBus(eventBus =>
+            {
+                // Subscribe with a handler
+                eventBus.Subscribe(forecastGeneratedEventHandler);
+            });
         });
     }
     ```
