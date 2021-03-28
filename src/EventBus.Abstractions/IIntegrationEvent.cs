@@ -10,7 +10,7 @@ namespace EventBus.Abstractions
         /// <summary>
         /// Unique event identifier.
         /// </summary>
-        Guid Id { get; }
+        string Id { get; }
 
         /// <summary>
         /// Event creation date.

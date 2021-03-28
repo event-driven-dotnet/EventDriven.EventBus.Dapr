@@ -6,7 +6,7 @@ namespace EventBus.Abstractions
     public abstract record IntegrationEvent : IIntegrationEvent
     {
         ///<inheritdoc/>
-        public Guid Id { get; init; } = Guid.NewGuid();
+        public string Id { get; init; } = Guid.NewGuid().ToString();
 
         ///<inheritdoc/>
         public DateTime CreationDate { get; init; } = DateTime.UtcNow;
