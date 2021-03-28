@@ -56,8 +56,9 @@ namespace Microsoft.AspNetCore.Builder
                 {
                     // Get handlers
                     var handlers = GetHandlersForRequest(context.Request.Path);
+                    if (handlers == null) return;
                     logger.LogInformation("Request handlers count: {HandlersCount}", handlers.Count);
-                    var handler1 = handlers?.FirstOrDefault();
+                    var handler1 = handlers.FirstOrDefault();
                     if (handler1 == null) return;
 
                     // Get event type
