@@ -2,7 +2,7 @@
 
 namespace EventBus.Abstractions
 {
-    ///<inheritdoc/>
+    /// <inheritdoc cref="IIntegrationEvent" />
     public abstract record IntegrationEvent : IIntegrationEvent
     {
         ///<inheritdoc/>

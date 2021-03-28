@@ -2,7 +2,5 @@
 
 namespace EventBus.Dapr.Tests.Fakes
 {
-    public record FakeIntegrationEvent(string Data) : IntegrationEvent
-    {
-    }
+    public record FakeIntegrationEvent(string Data) : IntegrationEvent;
 }

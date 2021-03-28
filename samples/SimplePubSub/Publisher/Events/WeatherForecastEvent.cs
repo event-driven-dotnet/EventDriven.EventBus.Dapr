@@ -4,7 +4,5 @@ using System.Collections.Generic;
 
 namespace Publisher.Events
 {
-    public record WeatherForecastEvent(IEnumerable<WeatherForecast> WeatherForecasts) : IntegrationEvent
-    {
-    }
+    public record WeatherForecastEvent(IEnumerable<WeatherForecast> WeatherForecasts) : IntegrationEvent;
 }

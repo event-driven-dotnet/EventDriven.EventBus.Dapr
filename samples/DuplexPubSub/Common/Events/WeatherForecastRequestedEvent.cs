@@ -2,7 +2,5 @@
 
 namespace Common.Events
 {
-    public record WeatherForecastRequestedEvent() : IntegrationEvent
-    {
-    }
+    public record WeatherForecastRequestedEvent() : IntegrationEvent;
 }

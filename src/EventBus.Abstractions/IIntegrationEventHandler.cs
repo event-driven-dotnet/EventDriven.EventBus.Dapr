@@ -27,7 +27,7 @@ namespace EventBus.Abstractions
     public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler
         where TIntegrationEvent : IIntegrationEvent
     {
-        ///<inheritdoc/>
+        /// <inheritdoc cref="IIntegrationEventHandler" />
         Task HandleAsync(TIntegrationEvent @event);
     }
 }
