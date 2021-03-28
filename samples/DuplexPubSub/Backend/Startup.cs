@@ -51,17 +51,16 @@ namespace WeatherGenerator
             }
 
             app.UseRouting();
-
+            app.UseCloudEvents();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
-
-            // Use Dapr service bus
-            app.UseDaprEventBus(eventBus =>
-            {
-                // Subscribe with a handler
-                eventBus.Subscribe(forecastGeneratedEventHandler);
+                // Map Dapr service bus
+                endpoints.MapDaprEventBus(eventBus =>
+                {
+                    // Subscribe with a handler
+                    eventBus.Subscribe(forecastGeneratedEventHandler);
+                });
             });
         }
     }

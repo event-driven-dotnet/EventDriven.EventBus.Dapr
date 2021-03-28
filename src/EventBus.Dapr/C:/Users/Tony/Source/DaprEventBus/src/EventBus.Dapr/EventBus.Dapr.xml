@@ -17,6 +17,19 @@
             <param name="configure">The original <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder" />.</param>
             <returns></returns>
         </member>
+        <member name="T:Microsoft.AspNetCore.Builder.DaprEventBusEndpointRouteBuilderExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.AspNetCore.Routing.IEndpointRouteBuilder" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.DaprEventBusEndpointRouteBuilderExtensions.MapDaprEventBus(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.Action{EventBus.Abstractions.IEventBus})">
+            <summary>
+            Maps endpoints that will handle requests for DaprEventBus subscriptions.
+            </summary>
+            <param name="endpoints">The <see cref="T:Microsoft.AspNetCore.Routing.IEndpointRouteBuilder" />.</param>
+            <param name="configure">The original <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder" />.</param>
+            <returns>An <see cref="T:EventBus.Dapr.DaprEventBusEndpointConventionBuilder"/> for endpoints associated with DaprEventBus subscriptions.</returns>
+        </member>
         <member name="T:Microsoft.Extensions.DependencyInjection.ServiceCollectionExtensions">
             <summary>
             Provides extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -44,6 +57,17 @@
         </member>
         <member name="M:EventBus.Dapr.DaprEventBus.PublishAsync``1(``0,System.String)">
             <inheritdoc/>
+        </member>
+        <member name="T:EventBus.Dapr.DaprEventBusEndpointConventionBuilder">
+            <summary>
+            Builds conventions that will be used for customization of Hub <see cref="T:Microsoft.AspNetCore.Builder.EndpointBuilder"/> instances.
+            </summary>
+        </member>
+        <member name="M:EventBus.Dapr.DaprEventBusEndpointConventionBuilder.Add(System.Action{Microsoft.AspNetCore.Builder.EndpointBuilder})">
+            <summary>
+            Adds the specified convention to the builder. Conventions are used to customize <see cref="T:Microsoft.AspNetCore.Builder.EndpointBuilder"/> instances.
+            </summary>
+            <param name="convention">The convention to add to the builder.</param>
         </member>
         <member name="T:EventBus.Dapr.DaprEventBusOptions">
             <summary>
