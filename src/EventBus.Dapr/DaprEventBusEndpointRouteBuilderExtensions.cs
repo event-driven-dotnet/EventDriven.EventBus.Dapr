@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dapr.Client;
@@ -52,43 +54,96 @@ namespace Microsoft.AspNetCore.Builder
 
                 async Task HandleMessage(HttpContext context)
                 {
+                    // Get handlers
                     var handlers = GetHandlersForRequest(context.Request.Path);
                     logger.LogInformation("Request handlers count: {HandlersCount}", handlers.Count);
+                    var handler1 = handlers?.FirstOrDefault();
+                    if (handler1 == null) return;
 
+                    // Get event type
+                    var eventType = GetEventType(handler1);
+                    if (eventType == null)
+                    {
+                        SetErrorStatus(context);
+                        return;
+                    }
+
+                    // Get event
+                    var @event = await GetEventFromRequestAsync(context, eventType, daprClient?.JsonSerializerOptions);
+                    if (@event == null)
+                    {
+                        SetErrorStatus(context);
+                        return;
+                    }
+
+                    // Process handlers
+                    var errorOccurred = false;
                     foreach (var handler in handlers)
                     {
-                        var @event = await GetEventFromRequestAsync(context, handler, daprClient?.JsonSerializerOptions);
-                        if (@event != null)
+                        logger.LogInformation("Handling event: {EventId}", @event.Id);
+                        try
                         {
-                            logger.LogInformation("Handling event: {EventId}", @event.Id);
                             await handler.HandleAsync(@event);
                         }
-                        else
+                        catch (Exception e)
                         {
-                            logger.LogInformation("Unable to get event from request: {RequestPath}",
-                                context.Request.Path);
+                            logger.LogInformation("Handler threw exception: {Message}", e);
+                            errorOccurred = true;
                         }
                     }
-                }
-
-                List<IIntegrationEventHandler> GetHandlersForRequest(string path)
-                {
-                    var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
-                    logger.LogInformation("Topic for request: {topic}", topic);
-
-                    if (eventBus.Topics.TryGetValue(topic, out List<IIntegrationEventHandler> handlers))
-                        return handlers;
-                    return null;
+                    
+                    // If any handler has thrown an exception, return 404 so Dapr can log an error and drop message.
+                    if (errorOccurred) SetErrorStatus(context);
                 }
             }
 
-            async Task<IIntegrationEvent> GetEventFromRequestAsync(HttpContext context, 
-                IIntegrationEventHandler handler, JsonSerializerOptions serializerOptions)
+            void SetErrorStatus(HttpContext context)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
+
+            List<IIntegrationEventHandler> GetHandlersForRequest(string path)
+            {
+                var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
+                logger.LogInformation("Topic for request: {topic}", topic);
+
+                if (eventBus.Topics.TryGetValue(topic, out var handlers))
+                    return handlers;
+                return null;
+            }
+
+            Type GetEventType(IIntegrationEventHandler handler)
             {
                 var eventType = handler.GetType().BaseType?.GenericTypeArguments[0];
-                if (eventType == null) return null;
-                var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType, serializerOptions);
-                return (IIntegrationEvent)value;
+                if (eventType != null) return eventType;
+                logger.LogInformation("Cannot determine event type.");
+                return null;
+            }
+
+            async Task<IIntegrationEvent> GetEventFromRequestAsync(HttpContext context, 
+                Type eventType, JsonSerializerOptions serializerOptions)
+            {
+                // Check content type
+                if (!string.Equals(context.Request.ContentType, MediaTypeNames.Application.Json,
+                    StringComparison.Ordinal))
+                {
+                    logger.LogInformation("Unsupported Content-Type header: {ContentType}",
+                        context.Request.ContentType);
+                    return null;
+                }
+                
+                // Get event
+                try
+                {
+                    var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType, serializerOptions);
+                    return (IIntegrationEvent)value;
+                }
+                catch (Exception e) when (e is JsonException || e is ArgumentNullException || e is NotSupportedException)
+                {
+                    logger.LogInformation("Unable to deserialize event from request '{RequestPath}': {Message}",
+                        context.Request.Path, e.Message);
+                    return null;
+                }
             }
 
             return new DaprEventBusEndpointConventionBuilder(builder);
