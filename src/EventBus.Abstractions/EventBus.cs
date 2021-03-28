@@ -7,20 +7,19 @@ namespace EventBus.Abstractions
     public abstract class EventBus : IEventBus
     {
         ///<inheritdoc/>
-        public Dictionary<string, List<IIntegrationEventHandler>> Topics { get; }
-            = new Dictionary<string, List<IIntegrationEventHandler>>();
+        public Dictionary<string, List<IIntegrationEventHandler>> Topics { get; } = new();
 
         ///<inheritdoc/>
         public virtual void Subscribe(IIntegrationEventHandler handler, string topic = null)
         {
             var topicName = topic ?? handler.Topic;
-            if (!Topics.ContainsKey(topicName))
+            if (Topics.TryGetValue(topicName, out var handlers))
+            {
+                handlers.Add(handler);
+            }
+            else
             {
                 Topics.Add(topicName, new List<IIntegrationEventHandler> { handler });
-            }
-            else if (Topics[topicName] != handler)
-            {
-                Topics[topicName].Add(handler);
             }
         }
 
