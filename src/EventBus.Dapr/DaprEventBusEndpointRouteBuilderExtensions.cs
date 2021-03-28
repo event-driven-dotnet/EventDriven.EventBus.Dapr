@@ -36,7 +36,7 @@ namespace Microsoft.AspNetCore.Builder
             var eventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
 
             // Configure event bus
-            logger.LogInformation($"Configuring event bus ...");
+            logger.LogInformation("Configuring event bus ...");
             configure?.Invoke(eventBus);
 
             IEndpointConventionBuilder builder = null;
@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 foreach (var topic in eventBus.Topics)
                 {
-                    logger.LogInformation($"Mapping Post for topic: {topic.Key}");
+                    logger.LogInformation("Mapping Post for topic: {TopicKey}", topic.Key);
                     builder = endpoints.MapPost(topic.Key, HandleMessage)
                         .WithTopic(eventBusOptions?.Value.PubSubName, topic.Key);
                 }
@@ -52,13 +52,13 @@ namespace Microsoft.AspNetCore.Builder
                 async Task HandleMessage(HttpContext context)
                 {
                     var handlers = GetHandlersForRequest(context.Request.Path);
-                    logger.LogInformation($"Request handlers count: {handlers.Count}");
+                    logger.LogInformation("Request handlers count: {HandlersCount}", handlers.Count);
 
                     foreach (var handler in handlers)
                     {
                         var @event =
                             await GetEventFromRequestAsync(context, handler, daprClient?.JsonSerializerOptions);
-                        logger.LogInformation($"Handling event: {@event.Id}");
+                        logger.LogInformation("Handling event: {EventId}", @event.Id);
                         await handler.HandleAsync(@event);
                     }
                 }
@@ -66,7 +66,7 @@ namespace Microsoft.AspNetCore.Builder
                 List<IIntegrationEventHandler> GetHandlersForRequest(string path)
                 {
                     var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
-                    logger.LogInformation($"Topic for request: {topic}");
+                    logger.LogInformation("Topic for request: {topic}", topic);
 
                     if (eventBus.Topics.TryGetValue(topic, out List<IIntegrationEventHandler> handlers))
                         return handlers;
