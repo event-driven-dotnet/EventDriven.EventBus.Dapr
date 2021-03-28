@@ -55,7 +55,7 @@ namespace WeatherGenerator
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                // Map Dapr service bus
+                endpoints.MapSubscribeHandler();
                 endpoints.MapDaprEventBus(eventBus =>
                 {
                     // Subscribe with a handler

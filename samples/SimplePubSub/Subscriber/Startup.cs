@@ -54,6 +54,7 @@ namespace Subscriber
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapSubscribeHandler();
                 endpoints.MapDaprEventBus(eventBus =>
                 {
                     // Subscribe with a handler
