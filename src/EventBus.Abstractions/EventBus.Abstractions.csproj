@@ -18,11 +18,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\Tony\Source\DaprEventBus\src\EventBus.Abstractions\EventBus.Abstractions.xml</DocumentationFile>
+    <DocumentationFile>bin/Release/EventBus.Abstractions.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\Tony\Source\DaprEventBus\src\EventBus.Abstractions\EventBus.Abstractions.xml</DocumentationFile>
+    <DocumentationFile>bin/Debug/EventBus.Abstractions.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
