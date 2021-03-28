@@ -13,6 +13,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
 ## Packages
 - [DaprEventBus.Abstractions](https://www.nuget.org/packages/DaprEventBus.Abstractions)
 - [DaprEventBus.Dapr](https://www.nuget.org/packages/DaprEventBus.Dapr)
+
 ## Usage
 
 1. In both the _publisher_ and _subscriber_, you need to register the **Dapr Event Bus** with DI by calling `services.AddDaprEventBus` in `Startup.ConfigureServices`.
@@ -28,9 +29,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
 2. Define a [C# record](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/exploration/records) that extends `IntegrationEvent`. For example, the following `WeatherForecastEvent` record does so by adding a `WeatherForecasts` property.
 
     ```csharp
-    public record WeatherForecastEvent(IEnumerable<WeatherForecast> WeatherForecasts) : IntegrationEvent
-    {
-    }
+    public record WeatherForecastEvent(IEnumerable<WeatherForecast> WeatherForecasts) : IntegrationEvent;
     ```
 
 3. In the publisher inject `IEventBus` into the constructor of a controller (Web API projects) or worker class (Worker Service projects). Then call `EventBus.PublishAsync`, passing the event you defined in step 2.
@@ -80,7 +79,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     ```
 
 5. Lastly, in `Startup.Configure` in `app.UseEndpoints` call `endpoints.MapDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
-   - Also call `app.UseRouting` and `app.UseCloudEvents`.
+   - Also call `app.UseRouting`, `app.UseCloudEvents`, `endpoints.MapSubscribeHandler`.
    - Make sure to add parameters to `Startup.Configure` to inject each handler you wish to use.
    - For example, to add the weather forecast handler, you must add a `WeatherForecastEventHandler` parameter to the `Configure` method.
 
@@ -92,7 +91,8 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
         app.UseCloudEvents();
         app.UseEndpoints(endpoints =>
         {
-            // Map Dapr service bus
+            // Map SubscribeHandler and DapEventBus
+            endpoints.MapSubscribeHandler();
             endpoints.MapDaprEventBus(eventBus =>
             {
                 // Subscribe with a handler

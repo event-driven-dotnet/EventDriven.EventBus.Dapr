@@ -39,45 +39,45 @@ namespace Microsoft.AspNetCore.Builder
             logger.LogInformation($"Configuring event bus ...");
             configure?.Invoke(eventBus);
 
-            endpoints.MapSubscribeHandler();
             IEndpointConventionBuilder builder = null;
-            foreach (var topic in eventBus.Topics)
+            if (eventBus?.Topics != null)
             {
-                logger.LogInformation($"Mapping Post for topic: {topic.Key}");
-                builder = endpoints.MapPost(topic.Key, HandleMessage)
-                    .WithTopic(eventBusOptions.Value.PubSubName, topic.Key);
-            }
-
-            async Task HandleMessage(HttpContext context)
-            {
-                var handlers = GetHandlersForRequest(context.Request.Path);
-                logger.LogInformation($"Request handlers count: {handlers.Count}");
-
-                if (handlers != null)
+                foreach (var topic in eventBus.Topics)
                 {
+                    logger.LogInformation($"Mapping Post for topic: {topic.Key}");
+                    builder = endpoints.MapPost(topic.Key, HandleMessage)
+                        .WithTopic(eventBusOptions?.Value.PubSubName, topic.Key);
+                }
+
+                async Task HandleMessage(HttpContext context)
+                {
+                    var handlers = GetHandlersForRequest(context.Request.Path);
+                    logger.LogInformation($"Request handlers count: {handlers.Count}");
+
                     foreach (var handler in handlers)
                     {
-                        var @event = await GetEventFromRequestAsync(context, handler, daprClient.JsonSerializerOptions);
+                        var @event =
+                            await GetEventFromRequestAsync(context, handler, daprClient?.JsonSerializerOptions);
                         logger.LogInformation($"Handling event: {@event.Id}");
                         await handler.HandleAsync(@event);
                     }
                 }
-            }
 
-            List<IIntegrationEventHandler> GetHandlersForRequest(string path)
-            {
-                var topic = path.Substring(path.IndexOf("/") + 1);
-                logger.LogInformation($"Topic for request: {topic}");
+                List<IIntegrationEventHandler> GetHandlersForRequest(string path)
+                {
+                    var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
+                    logger.LogInformation($"Topic for request: {topic}");
 
-                if (eventBus.Topics.TryGetValue(topic, out List<IIntegrationEventHandler> handlers))
-                    return handlers;
-                return null;
+                    if (eventBus.Topics.TryGetValue(topic, out List<IIntegrationEventHandler> handlers))
+                        return handlers;
+                    return null;
+                }
             }
 
             async Task<IIntegrationEvent> GetEventFromRequestAsync(HttpContext context, 
                 IIntegrationEventHandler handler, JsonSerializerOptions serializerOptions)
             {
-                var eventType = handler.GetType().BaseType.GenericTypeArguments[0];
+                var eventType = handler.GetType().BaseType?.GenericTypeArguments[0];
                 var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType, serializerOptions);
                 return (IIntegrationEvent)value;
             }
