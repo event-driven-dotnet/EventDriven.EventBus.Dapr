@@ -8,8 +8,7 @@ namespace WeatherGenerator.Factories
 {
     public class WeatherFactory
     {
-        private readonly string[] Summaries = new[]
-        {
+        private readonly string[] _summaries = {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
@@ -22,7 +21,7 @@ namespace WeatherGenerator.Factories
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast(
                 DateTime.Now.AddDays(index),
                 rng.Next(-20, 55),
-                Summaries[rng.Next(Summaries.Length)]
+                _summaries[rng.Next(_summaries.Length)]
             ));
         }
     }

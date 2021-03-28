@@ -2,6 +2,7 @@
 using EventBus.Dapr;
 using System.Text.Json;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>

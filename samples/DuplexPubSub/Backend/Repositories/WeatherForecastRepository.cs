@@ -1,8 +1,8 @@
-﻿using Common.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Common.Models;
 
-namespace WeatherGenerator.Repositories
+namespace Backend.Repositories
 {
     public class WeatherForecastRepository
     {
@@ -12,7 +12,7 @@ namespace WeatherGenerator.Repositories
 
         public IEnumerable<WeatherForecast> WeatherForecasts
         {
-            get { return _weatherForecasts; }
+            get => _weatherForecasts;
             set
             { 
                 _weatherForecasts = value;

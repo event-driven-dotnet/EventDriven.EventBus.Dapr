@@ -1,14 +1,14 @@
+using Backend.Handlers;
+using Backend.Repositories;
+using Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Backend.Handlers;
-using Common;
-using WeatherGenerator.Repositories;
 
-namespace WeatherGenerator
+namespace Backend
 {
     public class Startup
     {

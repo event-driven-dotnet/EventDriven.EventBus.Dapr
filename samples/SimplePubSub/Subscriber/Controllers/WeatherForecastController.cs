@@ -21,7 +21,7 @@ namespace Subscriber.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            _logger.LogInformation($"Weatherforecast requested.");
+            _logger.LogInformation("Weather forecast requested.");
             return _weatherRepo.WeatherForecasts;
         }
     }

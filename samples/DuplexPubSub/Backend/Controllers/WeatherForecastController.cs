@@ -1,14 +1,14 @@
-﻿using WeatherGenerator.Repositories;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Backend.Repositories;
 using Common.Events;
 using Common.Models;
 using EventBus.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace WeatherGenerator.Controllers
+namespace Backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -31,16 +31,16 @@ namespace WeatherGenerator.Controllers
         {
             // Publish event
             await _eventBus.PublishAsync(new WeatherForecastRequestedEvent());
-            _logger.LogInformation($"Weather forecast requested.");
+            _logger.LogInformation("Weather forecast requested.");
 
             // Get notified when weather changes
             var weatherChanged = false;
             var weatherForecasts = Enumerable.Empty<WeatherForecast>();
-            _weatherRepo.WeatherChangedEvent += (sender, e) =>
+            _weatherRepo.WeatherChangedEvent += (_, _) =>
             {
                 weatherChanged = true;
                 weatherForecasts = _weatherRepo.WeatherForecasts;
-                _logger.LogInformation($"Weather forecast generated.");
+                _logger.LogInformation("Weather forecast generated.");
             };
 
             // Wait in a loop for a response from the weather generator service.

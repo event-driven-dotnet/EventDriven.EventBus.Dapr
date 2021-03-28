@@ -18,7 +18,7 @@ namespace Subscriber.Events
 
         public override Task HandleAsync(WeatherForecastEvent @event)
         {
-            _logger.LogInformation($"Weather posted.");
+            _logger.LogInformation("Weather posted.");
             _weatherRepo.WeatherForecasts = @event.WeatherForecasts;
             return Task.CompletedTask;
         }

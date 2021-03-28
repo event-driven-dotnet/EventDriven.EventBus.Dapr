@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using EventBus.Abstractions;
 using System.Threading.Tasks;
+using Backend.Repositories;
 using Common.Events;
-using WeatherGenerator.Repositories;
 
 namespace Backend.Handlers
 {
@@ -19,7 +19,7 @@ namespace Backend.Handlers
 
         public override Task HandleAsync(WeatherForecastGeneratedEvent @event)
         {
-            _logger.LogInformation($"Weather posted.");
+            _logger.LogInformation("Weather posted.");
             _weatherRepo.WeatherForecasts = @event.WeatherForecasts;
             return Task.CompletedTask;
         }

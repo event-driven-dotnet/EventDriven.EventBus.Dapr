@@ -22,7 +22,7 @@ namespace WeatherGenerator.Handlers
 
         public async override Task HandleAsync(WeatherForecastRequestedEvent @event)
         {
-            _logger.LogInformation($"Weather forecast requested.");
+            _logger.LogInformation("Weather forecast requested.");
 
             // Create weather forecasts after a 5 second delay (to simulate latency)
             int delaySeconds = 5;

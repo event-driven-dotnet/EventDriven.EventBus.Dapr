@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.AspNetCore.Builder
 {
     /// <summary>
