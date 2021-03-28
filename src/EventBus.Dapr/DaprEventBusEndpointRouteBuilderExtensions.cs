@@ -56,10 +56,17 @@ namespace Microsoft.AspNetCore.Builder
 
                     foreach (var handler in handlers)
                     {
-                        var @event =
-                            await GetEventFromRequestAsync(context, handler, daprClient?.JsonSerializerOptions);
-                        logger.LogInformation("Handling event: {EventId}", @event.Id);
-                        await handler.HandleAsync(@event);
+                        var @event = await GetEventFromRequestAsync(context, handler, daprClient?.JsonSerializerOptions);
+                        if (@event != null)
+                        {
+                            logger.LogInformation("Handling event: {EventId}", @event.Id);
+                            await handler.HandleAsync(@event);
+                        }
+                        else
+                        {
+                            logger.LogInformation("Unable to get event from request: {RequestPath}",
+                                context.Request.Path);
+                        }
                     }
                 }
 
@@ -78,6 +85,7 @@ namespace Microsoft.AspNetCore.Builder
                 IIntegrationEventHandler handler, JsonSerializerOptions serializerOptions)
             {
                 var eventType = handler.GetType().BaseType?.GenericTypeArguments[0];
+                if (eventType == null) return null;
                 var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType, serializerOptions);
                 return (IIntegrationEvent)value;
             }
