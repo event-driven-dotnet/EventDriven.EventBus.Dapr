@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0-beta</Version>
+    <Version>1.0.0-beta2</Version>
     <Description>An event bus abstraction layer.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>event-bus.png</PackageIcon>
@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/dapr-dotnet-extensions/dapr-event-bus.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>event-bus</PackageTags>
-    <PackageReleaseNotes>https://github.com/dapr-dotnet-extensions/dapr-event-bus/releases/tag/v1.0.0-beta</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/dapr-dotnet-extensions/dapr-event-bus/releases/tag/v1.0.0-beta2</PackageReleaseNotes>
     <PackageId>DaprEventBus.Abstractions</PackageId>
   </PropertyGroup>
 
