@@ -16,7 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>event-bus event-driven event-driven-architecture dapr</PackageTags>
     <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.0.0-rc1</PackageReleaseNotes>
-    <PackageId>DaprEventBus.Dapr</PackageId>
+    <PackageId>EventDriven.EventBus.Dapr</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
