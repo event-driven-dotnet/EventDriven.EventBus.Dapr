@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Backend.Repositories;
 using Common.Events;
 using Common.Models;
-using EventBus.Abstractions;
+using EventDriven.EventBus.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 

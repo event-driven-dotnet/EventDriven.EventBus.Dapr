@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.0.0-rc1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\EventBus.Abstractions\EventBus.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\src\EventBus.Dapr\EventBus.Dapr.csproj" />
+    <ProjectReference Include="..\..\..\src\EventDriven.EventBus.Dapr\EventDriven.EventBus.Dapr.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="https://json.schemastore.org/jsinspectrc" /></VisualStudio></ProjectExtensions>

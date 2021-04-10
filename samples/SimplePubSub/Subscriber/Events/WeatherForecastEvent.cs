@@ -1,6 +1,6 @@
-﻿using EventBus.Abstractions;
-using Subscriber.Models;
+﻿using Subscriber.Models;
 using System.Collections.Generic;
+using EventDriven.EventBus.Abstractions;
 
 namespace Subscriber.Events
 {

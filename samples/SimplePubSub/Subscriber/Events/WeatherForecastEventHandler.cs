@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using EventBus.Abstractions;
 using Subscriber.Models;
 using System.Threading.Tasks;
+using EventDriven.EventBus.Abstractions;
 
 namespace Subscriber.Events
 {

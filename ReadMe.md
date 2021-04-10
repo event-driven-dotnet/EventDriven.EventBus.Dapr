@@ -1,4 +1,4 @@
-# Dapr Event Bus
+# EventDriven.EventBus.Dapr
 
 An event bus abstraction over Dapr pub/sub.
 
@@ -11,8 +11,8 @@ The [Dapr .NET SDK](https://github.com/dapr/dotnet-sdk) provides an API to perfo
 The purpose of the **Dapr Event Bus** project is to provide a thin abstraction layer over Dapr pub/sub so that applications may publish events and subscribe to topics _without any knowledge of Dapr_. This allows for better testability and flexibility, especially for worker services that do not natively include an HTTP stack.
 
 ## Packages
-- [DaprEventBus.Abstractions](https://www.nuget.org/packages/DaprEventBus.Abstractions)
-- [DaprEventBus.Dapr](https://www.nuget.org/packages/DaprEventBus.Dapr)
+- [EventDriven.EventBus.Abstractions](https://www.nuget.org/packages/EventDriven.EventBus.Abstractions)
+- [EventDriven.EventBus.Dapr](https://www.nuget.org/packages/EventDriven.EventBus.Dapr)
 
 ## Usage
 
@@ -111,11 +111,11 @@ The **samples** folder contains two sample applications which use the Dapr Event
 
 ## Dapr Event Bus Packages
 
-The Dapr Event Bus consists of two NuGet packages: [DaprEventBus.Abstractions](https://www.nuget.org/packages/DaprEventBus.Abstractions) and [DaprEventBus.Dapr](https://www.nuget.org/packages/DaprEventBus.Dapr).
+The Dapr Event Bus consists of two NuGet packages: **EventDriven.EventBus.Abstractions** and **EventDriven.EventBus.Dapr**.
 
-### DaprEventBus.Abstractions
+### EventDriven.EventBus.Abstractions
 
-The **DaprEventBus.Abstractions** package includes interfaces and abstract classes which provide an abstraction layer for interacting with any messsaging subsystem. This allows you to potentially exchange the [Dapr](https://dapr.io/) implementation with another one, such as [NServiceBus](https://particular.net/nservicebus) or [MassTransit](https://masstransit-project.com/), _without altering application code_.
+The **EventDriven.EventBus.Abstractions** package includes interfaces and abstract classes which provide an abstraction layer for interacting with any messsaging subsystem. This allows you to potentially exchange the [Dapr](https://dapr.io/) implementation with another one, such as [NServiceBus](https://particular.net/nservicebus) or [MassTransit](https://masstransit-project.com/), _without altering application code_.
 
 This package contains an `IEventBus` interface implemented by an `EventBus` abstract class.
 
@@ -124,14 +124,25 @@ public interface IEventBus
 {
     Dictionary<string, List<IIntegrationEventHandler>> Topics { get; }
 
-    void Subscribe(IIntegrationEventHandler handler);
+    void Subscribe(
+        IIntegrationEventHandler handler,
+        string topic = null,
+        string prefix = null);
 
-    Task PublishAsync<TIntegrationEvent>(TIntegrationEvent @event, string topic = null)
+    void UnSubscribe(
+        IIntegrationEventHandler handler,
+        string topic = null,
+        string prefix = null);
+
+    Task PublishAsync<TIntegrationEvent>(
+        TIntegrationEvent @event,
+        string topic = null,
+        string prefix = null)
         where TIntegrationEvent : IIntegrationEvent;
 }
 ```
 
-When a subscriber calls `Subscribe`, it passes a class that extends `IntegrationEventHandler`, which implements `IIntegrationEventHandler`. The event handler is added to a topic which can have one more handlers. There are non-generic and generic versions of `IIntegrationEventHandler`.
+When a subscriber calls `Subscribe`, it passes a class that extends `IntegrationEventHandler`, which implements `IIntegrationEventHandler`. The event handler is added to a topic which can have one more handlers. A topic name may be specified explicitly, as well as a prefix which may contain a version number. There are non-generic and generic versions of `IIntegrationEventHandler`.
 
 ```csharp
 public interface IIntegrationEventHandler
@@ -153,7 +164,7 @@ The generic version of `IntegrationEventHandler` includes a `TIntegrationEvent` 
 ```csharp
 public interface IIntegrationEvent
 {
-    Guid Id { get; }
+    string Id { get; }
 
     DateTime CreationDate { get; }
 }
@@ -162,15 +173,15 @@ public interface IIntegrationEvent
 ```csharp
 public abstract record IntegrationEvent : IIntegrationEvent
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public string Id { get; init; } = Guid.NewGuid().ToString();
 
     public DateTime CreationDate { get; init; } = DateTime.UtcNow;
 }
 ```
 
-### DaprEventBus.Dapr
+### EventDriven.EventBus.Dapr
 
-The **DaprEventBus.Dapr** package has a `DaprEventBus` class that extends `EventBus` by injecting `DaprClient`. It also injects `DaprEventBusOptions` for the pubsub component name needed by `DaprClient.PublishAsync`. The event topic defaults to the _type name_ of the the event, but it can also be supplied explicitly.
+The **EventDriven.EventBus.Dapr** package has a `DaprEventBus` class that extends `EventBus` by injecting `DaprClient`. It also injects `DaprEventBusOptions` for the pubsub component name needed by `DaprClient.PublishAsync`. The event topic defaults to the _type name_ of the the event, but it can also be supplied explicitly.
 
 ```csharp
 public class DaprEventBus : EventBus
@@ -184,16 +195,18 @@ public class DaprEventBus : EventBus
         _dapr = dapr ?? throw new ArgumentNullException(nameof(dapr));
     }
 
-    public override async Task PublishAsync<TIntegrationEvent>(TIntegrationEvent @event, string topic = null)
+    public override async Task PublishAsync<TIntegrationEvent>(
+        TIntegrationEvent @event,
+        string topic = null,
+        string prefix = null)
     {
         if (@event is null) throw new ArgumentNullException(nameof(@event));
-        topic = topic ?? @event.GetType().Name;
-
-        await _dapr.PublishAsync(_options.Value.PubSubName, topic, (dynamic)@event);
+        var topicName = GetTopicName(@event.GetType(), topic, prefix);
+        await _dapr.PublishEventAsync(_options.Value.PubSubName, topicName, @event);
     }
 }
 ```
 
 The `ServiceCollectionExtensions` class has a `AddDaprEventBus` method that registers `DaprClient` and `DaprEventBus`, and it configures `DaprEventBusOptions` for specifying the `PubSubName` option.
 
-The `ApplicationBuilderExtensions` class has a `UseDaprEventBus` method that allows the caller to subscribe to `DaprEventBus` by adding handlers. It maps an _HTTP Post_ endpoint for each event bus topic that is called by Dapr when a message is sent to the registered pub/sub component. The default component Redis, but Dapr can be configured to use another message broker, such as AWS SNS+SQS.
+The `DaprEventBusEndpointRouteBuilderExtensions` class has a `MapDaprEventBus` method that allows the caller to subscribe to `DaprEventBus` by adding handlers. It maps an _HTTP Post_ endpoint for each event bus topic that is called by Dapr when a message is sent to the registered pub/sub component. The default component Redis, but Dapr can be configured to use another message broker, such as AWS SNS+SQS.

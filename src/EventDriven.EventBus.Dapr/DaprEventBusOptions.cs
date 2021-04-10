@@ -1,4 +1,4 @@
-﻿namespace EventBus.Dapr
+﻿namespace EventDriven.EventBus.Dapr
 {
     /// <summary>
     /// DaprEventBus options.

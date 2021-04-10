@@ -1,4 +1,4 @@
-﻿using EventBus.Abstractions;
+﻿using EventDriven.EventBus.Abstractions;
 
 namespace Common.Events
 {

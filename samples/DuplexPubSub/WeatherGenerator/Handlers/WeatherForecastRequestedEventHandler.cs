@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using EventBus.Abstractions;
 using System.Threading.Tasks;
 using Common.Events;
+using EventDriven.EventBus.Abstractions;
 using WeatherGenerator.Factories;
 
 namespace WeatherGenerator.Handlers

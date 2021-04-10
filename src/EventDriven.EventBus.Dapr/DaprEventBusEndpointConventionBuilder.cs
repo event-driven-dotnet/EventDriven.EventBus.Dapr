@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 
-namespace EventBus.Dapr
+namespace EventDriven.EventBus.Dapr
 {
     /// <summary>
     /// Builds conventions that will be used for customization of Hub <see cref="EndpointBuilder"/> instances.

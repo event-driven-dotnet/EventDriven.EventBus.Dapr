@@ -1,6 +1,6 @@
 ﻿using Common.Models;
-using EventBus.Abstractions;
 using System.Collections.Generic;
+using EventDriven.EventBus.Abstractions;
 
 namespace Common.Events
 {

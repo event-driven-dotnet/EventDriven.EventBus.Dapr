@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace EventBus.Dapr
+namespace EventDriven.EventBus.Dapr
 {
     /// <summary>
     /// Uses Dapr to provide a way for systems to communicate without knowing about each other.
@@ -25,11 +25,14 @@ namespace EventBus.Dapr
         }
 
         ///<inheritdoc/>
-        public override async Task PublishAsync<TIntegrationEvent>(TIntegrationEvent @event, string topic = null)
+        public override async Task PublishAsync<TIntegrationEvent>(
+            TIntegrationEvent @event,
+            string topic = null,
+            string prefix = null)
         {
             if (@event is null) throw new ArgumentNullException(nameof(@event));
-            topic ??= @event.GetType().Name;
-            await _dapr.PublishEventAsync(_options.Value.PubSubName, topic, @event);
+            var topicName = GetTopicName(@event.GetType(), topic, prefix);
+            await _dapr.PublishEventAsync(_options.Value.PubSubName, topicName, @event);
         }
     }
 }

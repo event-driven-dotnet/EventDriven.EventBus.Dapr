@@ -1,6 +1,6 @@
 ﻿using Publisher.Models;
-using EventBus.Abstractions;
 using System.Collections.Generic;
+using EventDriven.EventBus.Abstractions;
 
 namespace Publisher.Events
 {

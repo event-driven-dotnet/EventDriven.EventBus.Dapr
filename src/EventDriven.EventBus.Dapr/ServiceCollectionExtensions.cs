@@ -1,6 +1,6 @@
-﻿using EventBus.Abstractions;
-using EventBus.Dapr;
-using System.Text.Json;
+﻿using System.Text.Json;
+using EventDriven.EventBus.Abstractions;
+using EventDriven.EventBus.Dapr;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection

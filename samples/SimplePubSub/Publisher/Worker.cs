@@ -2,10 +2,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Publisher.Events;
 using Publisher.Models;
-using EventBus.Abstractions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using EventDriven.EventBus.Abstractions;
 
 namespace Publisher
 {

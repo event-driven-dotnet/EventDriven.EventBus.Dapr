@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using EventBus.Abstractions;
 using System.Threading.Tasks;
 using Backend.Repositories;
 using Common.Events;
+using EventDriven.EventBus.Abstractions;
 
 namespace Backend.Handlers
 {
