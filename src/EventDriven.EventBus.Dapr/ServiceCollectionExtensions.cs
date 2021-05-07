@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using EventDriven.EventBus.Abstractions;
 using EventDriven.EventBus.Dapr;
 
@@ -14,9 +15,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds DaprEventBus services to the provided <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /></param>
-        /// <param name="pubSubName">The name of the pubsub component to use.</param>
+        /// <param name="pubSubName">The name of the pub sub component to use.</param>
+        /// <param name="configureSchemaOptions">Configure schema registry options.</param>
         /// <returns>The original <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
-        public static IServiceCollection AddDaprEventBus(this IServiceCollection services, string pubSubName)
+        public static IServiceCollection AddDaprEventBus(this IServiceCollection services, string pubSubName,
+            Action<DaprEventBusSchemaOptions> configureSchemaOptions = null)
         {
             services.AddDaprClient(builder =>
                 builder.UseJsonSerializationOptions(new JsonSerializerOptions()
@@ -26,6 +29,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 }));
             services.AddSingleton<IEventBus, DaprEventBus>();
             services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName);
+
+            var schemaOptions = new DaprEventBusSchemaOptions();
+            configureSchemaOptions ??= options =>
+            {
+                options.UseSchemaRegistry = false;
+                options.AddSchemaOnPublish = false;
+            };
+            configureSchemaOptions.Invoke(schemaOptions);
+            services.Configure(configureSchemaOptions);
             return services;
         }
     }

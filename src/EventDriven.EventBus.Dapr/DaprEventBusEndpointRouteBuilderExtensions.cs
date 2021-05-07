@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Builder
         /// Maps endpoints that will handle requests for DaprEventBus subscriptions.
         /// </summary>
         /// <param name="endpoints">The <see cref="IEndpointRouteBuilder" />.</param>
-        /// <param name="configure">The original <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder" />.</param>
+        /// <param name="configure">Used to subscribe to events with event handlers.</param>
         /// <returns>An <see cref="DaprEventBusEndpointConventionBuilder"/> for endpoints associated with DaprEventBus subscriptions.</returns>
         public static DaprEventBusEndpointConventionBuilder MapDaprEventBus(this IEndpointRouteBuilder endpoints,
             Action<IEventBus> configure = null)
@@ -106,7 +106,7 @@ namespace Microsoft.AspNetCore.Builder
             List<IIntegrationEventHandler> GetHandlersForRequest(string path)
             {
                 var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
-                logger.LogInformation("Topic for request: {topic}", topic);
+                logger.LogInformation("Topic for request: {Topic}", topic);
 
                 if (eventBus.Topics.TryGetValue(topic, out var handlers))
                     return handlers;
@@ -117,7 +117,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 var eventType = handler.GetType().BaseType?.GenericTypeArguments[0];
                 if (eventType != null) return eventType;
-                logger.LogInformation("Cannot determine event type.");
+                logger.LogInformation("Cannot determine event type");
                 return null;
             }
 
