@@ -2,6 +2,8 @@
 using System.Text.Json;
 using EventDriven.EventBus.Abstractions;
 using EventDriven.EventBus.Dapr;
+using EventDriven.SchemaRegistry.Abstractions;
+using EventDriven.SchemaValidator.Json;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
@@ -34,10 +36,16 @@ namespace Microsoft.Extensions.DependencyInjection
             configureSchemaOptions ??= options =>
             {
                 options.UseSchemaRegistry = false;
-                options.AddSchemaOnPublish = false;
             };
             configureSchemaOptions.Invoke(schemaOptions);
             services.Configure(configureSchemaOptions);
+
+            if (schemaOptions.SchemaValidatorType == SchemaValidatorType.Json)
+            {
+                services.AddSingleton<ISchemaGenerator, JsonSchemaGenerator>();
+                services.AddSingleton<ISchemaValidator, JsonSchemaValidator>();
+            }
+            services.AddDaprSchemaRegistry(schemaOptions.SchemaRegistryStateStoreName);
             return services;
         }
     }

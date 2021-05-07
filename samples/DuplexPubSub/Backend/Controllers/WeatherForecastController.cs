@@ -30,8 +30,8 @@ namespace Backend.Controllers
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
             // Publish event
-            await _eventBus.PublishAsync(new WeatherForecastRequestedEvent());
-            _logger.LogInformation("Weather forecast requested.");
+            await _eventBus.PublishAsync(new WeatherForecastRequestedEvent(), null, "v1");
+            _logger.LogInformation("Weather forecast requested");
 
             // Get notified when weather changes
             var weatherChanged = false;
@@ -40,7 +40,7 @@ namespace Backend.Controllers
             {
                 weatherChanged = true;
                 weatherForecasts = _weatherRepo.WeatherForecasts;
-                _logger.LogInformation("Weather forecast generated.");
+                _logger.LogInformation("Weather forecast generated");
             };
 
             // Wait in a loop for a response from the weather generator service.

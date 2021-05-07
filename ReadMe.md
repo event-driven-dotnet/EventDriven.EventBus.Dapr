@@ -102,6 +102,48 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     }
     ```
 
+## Schema Registry
+
+When you enable Schema Registry for the Dapr Event Bus, messages sent to the Event Bus will be validated using schemas registered for a given topic. By default Json Schema will be used to validate messages (other schema types may be supported in the future). This helps ensure that message schemas will not change in a way that will cause deserialization errors when consumers receive messages for a specific topic.
+
+> **Note**: Schema evolution rules for Json allow the addition of fields, which are then ignored by consumers. If fields are not required, they can be omitted and consumers will get default values when they deserialize messages.
+
+The Schema Registry only validates messages when they are published to the Event Bus. Therefore, it is only necessary to enable Schema Registry for publishers, not subscribers. Schema registry options are available when adding Dapr Event Bus.
+
+```csharp
+// Configuration
+var eventBusOptions = new DaprEventBusOptions();
+hostContext.Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
+var stateStoreOptions = new DaprStateStoreOptions();
+hostContext.Configuration.GetSection(nameof(DaprStateStoreOptions)).Bind(stateStoreOptions);
+
+// Add Dapr service bus and enable schema registry with schemas added on publish.
+services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
+{
+    options.UseSchemaRegistry = true;
+    options.SchemaRegistryStateStoreName = stateStoreOptions.StateStoreName;
+    options.SchemaValidatorType = SchemaValidatorType.Json;
+    options.AddSchemaOnPublish = true;
+});
+```
+
+`UseSchemaRegistry` enables use of the Schema Registry. `SchemaValidatorType` specifies the type of schema validator to use (the default is `Json`). `AddSchemaOnPublish` will add a generated schema to the Schema Registry if no schema has been previously registered for a given topic.
+
+> **Note**: **EventDriven.SchemaValidator.Json** uses `JSchemaGenerator` from Newtonsoft.Json.Schema.Generation, which makes all fields *required* by default. To make fields optional, you need to use **EventDriven.SchemaRegistry.Api** to update the schema by removing required fields.
+
+To retrieve, create, update and delete schemas from the schema registry for the publisher, you can run the **EventDriven.SchemaRegistry.Api** project, specifying the same `app-id` as the publisher.
+
+```
+dapr run --app-id publisher --app-port 5100 -- dotnet run --urls "http://localhost:5100"
+```
+
+Then open a browser at http://localhost:5100/swagger to execute GET, POST, PUT and DELETE requests. To view all the registered topics for the publisher, you can connect to the Redis container directly and use the redis-cli.
+
+```
+docker run --rm -it --link dapr_redis redis redis-cli -h dapr_redis
+KEYS publisher*
+```
+
 ## Samples
 
 The **samples** folder contains two sample applications which use the Dapr Event Bus: **SimplePubSub** and **DuplexPubSub**.

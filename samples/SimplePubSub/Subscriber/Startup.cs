@@ -1,3 +1,4 @@
+using EventDriven.EventBus.Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,8 +35,12 @@ namespace Subscriber
             // Add handlers
             services.AddSingleton<WeatherForecastEventHandler>();
 
+            // Configuration
+            var eventBusOptions = new DaprEventBusOptions();
+            Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
+
             // Add Dapr service bus
-            services.AddDaprEventBus(Constants.DaprPubSubName);
+            services.AddDaprEventBus(eventBusOptions.PubSubName);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +63,7 @@ namespace Subscriber
                 endpoints.MapDaprEventBus(eventBus =>
                 {
                     // Subscribe with a handler
-                    eventBus.Subscribe(forecastEventHandler);
+                    eventBus.Subscribe(forecastEventHandler, null, "v1");
                 });
             });
         }

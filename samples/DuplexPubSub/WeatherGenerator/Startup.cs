@@ -1,4 +1,6 @@
 using Common;
+using EventDriven.EventBus.Dapr;
+using EventDriven.SchemaRegistry.Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,8 +28,20 @@ namespace WeatherGenerator
             // Add handlers
             services.AddSingleton<WeatherForecastRequestedEventHandler>();
 
+            // Configuration
+            var eventBusOptions = new DaprEventBusOptions();
+            Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
+            var stateStoreOptions = new DaprStateStoreOptions();
+            Configuration.GetSection(nameof(DaprStateStoreOptions)).Bind(stateStoreOptions);
+
             // Add Dapr service bus
-            services.AddDaprEventBus(Constants.DaprPubSubName);
+            services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
+            {
+                options.UseSchemaRegistry = true;
+                options.SchemaRegistryStateStoreName = stateStoreOptions.StateStoreName;
+                options.SchemaValidatorType = SchemaValidatorType.Json;
+                options.AddSchemaOnPublish = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,7 +57,7 @@ namespace WeatherGenerator
                 endpoints.MapDaprEventBus(eventBus =>
                 {
                     // Subscribe with a handler
-                    eventBus.Subscribe(forecastRequestedEventHandler);
+                    eventBus.Subscribe(forecastRequestedEventHandler, null, "v1");
                 });
             });
         }

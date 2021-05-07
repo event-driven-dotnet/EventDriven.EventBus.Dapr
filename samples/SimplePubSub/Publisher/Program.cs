@@ -1,3 +1,6 @@
+using EventDriven.EventBus.Dapr;
+using EventDriven.SchemaRegistry.Dapr;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Publisher.Models;
@@ -11,14 +14,27 @@ namespace Publisher
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
                     services.AddSingleton<WeatherFactory>();
-                    // Add Dapr service bus
-                    services.AddDaprEventBus(Constants.DaprPubSubName);
+
+                    // Configuration
+                    var eventBusOptions = new DaprEventBusOptions();
+                    hostContext.Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
+                    var stateStoreOptions = new DaprStateStoreOptions();
+                    hostContext.Configuration.GetSection(nameof(DaprStateStoreOptions)).Bind(stateStoreOptions);
+
+                    // Add Dapr service bus and enable schema registry with schemas added on publish.
+                    services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
+                    {
+                        options.UseSchemaRegistry = true;
+                        options.SchemaRegistryStateStoreName = stateStoreOptions.StateStoreName;
+                        options.SchemaValidatorType = SchemaValidatorType.Json;
+                        options.AddSchemaOnPublish = true;
+                    });
                 });
     }
 }

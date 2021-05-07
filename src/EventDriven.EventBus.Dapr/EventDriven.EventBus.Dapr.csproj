@@ -30,7 +30,8 @@
   <ItemGroup>
     <PackageReference Include="Dapr.AspNetCore" Version="1.1.1" />
     <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.0.0" />
-    <PackageReference Include="EventDriven.SchemaRegistry.Abstractions" Version="1.0.0-beta1" />
+    <PackageReference Include="EventDriven.SchemaRegistry.Dapr" Version="1.0.0-beta1" />
+    <PackageReference Include="EventDriven.SchemaValidator.Json" Version="1.0.0-beta1" />
   </ItemGroup>
 
   <ItemGroup>

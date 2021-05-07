@@ -26,13 +26,13 @@ namespace Publisher
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Publishing event at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Publishing event at: {Time}", DateTimeOffset.Now);
 
                 // Create weather forecasts
                 var weathers = _factory.CreateWeather();
 
                 // Publish event
-                await _eventBus.PublishAsync(new WeatherForecastEvent(weathers));
+                await _eventBus.PublishAsync(new WeatherForecastEvent(weathers), null, "v1");
 
                 await Task.Delay(5000, stoppingToken);
             }
