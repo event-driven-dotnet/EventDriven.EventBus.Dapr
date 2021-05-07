@@ -8,6 +8,6 @@
         /// <summary>
         /// Dapr PubSub component name.
         /// </summary>
-        public string PubSubName { get; set; }
+        public string PubSubName { get; set; } = "pubsub";
     }
 }
