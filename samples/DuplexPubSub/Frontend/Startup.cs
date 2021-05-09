@@ -1,3 +1,4 @@
+using System;
 using Dapr.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,8 +22,12 @@ namespace Frontend
         {
             services.AddRazorPages();
 
-            // Add weather client with Dapr
-            services.AddSingleton(new WeatherClient(DaprClient.CreateInvokeHttpClient("backend")));
+            // Add weather client
+            services.AddSingleton<WeatherClient>();
+            services.AddHttpClient("backend", config =>
+            {
+                config.BaseAddress = new Uri(Configuration["BackendBaseAddress"]);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

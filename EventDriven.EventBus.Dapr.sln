@@ -38,6 +38,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "samples\DuplexPub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDriven.EventBus.Dapr", "src\EventDriven.EventBus.Dapr\EventDriven.EventBus.Dapr.csproj", "{2D3D1AA4-B23E-46F5-BCBF-DE26F9435B25}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{BA881D2B-4DB9-4C58-A3A0-85C73B1B9F74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{9E508385-DCEA-4BD5-A5B9-9BA715ABB79C}"
+ProjectSection(SolutionItems) = preProject
+	samples\DuplexPubSub\dapr\components\mongodb-statestore.yml = samples\DuplexPubSub\dapr\components\mongodb-statestore.yml
+	samples\DuplexPubSub\dapr\components\snssqs-pubsub.yaml = samples\DuplexPubSub\dapr\components\snssqs-pubsub.yaml
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{E18CD0A0-CF71-41DD-82CB-B4A3D9828C17}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{4402BA00-9DD8-42DB-8C15-07126855BA3B}"
+ProjectSection(SolutionItems) = preProject
+	samples\SimplePubSub\dapr\components\mongodb-statestore.yml = samples\SimplePubSub\dapr\components\mongodb-statestore.yml
+	samples\SimplePubSub\dapr\components\snssqs-pubsub.yaml = samples\SimplePubSub\dapr\components\snssqs-pubsub.yaml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +102,10 @@ Global
 		{CB92287C-EB8B-42A4-801A-44EA1AF86292} = {47FF70C6-3ECE-4D1B-9793-C480B689485D}
 		{B2A5B12A-7E58-4A8A-89ED-AB1CCA6C0BD4} = {47FF70C6-3ECE-4D1B-9793-C480B689485D}
 		{2D3D1AA4-B23E-46F5-BCBF-DE26F9435B25} = {BA9F4C61-03E7-4616-986F-83AE2B651D3D}
+		{BA881D2B-4DB9-4C58-A3A0-85C73B1B9F74} = {47FF70C6-3ECE-4D1B-9793-C480B689485D}
+		{9E508385-DCEA-4BD5-A5B9-9BA715ABB79C} = {BA881D2B-4DB9-4C58-A3A0-85C73B1B9F74}
+		{E18CD0A0-CF71-41DD-82CB-B4A3D9828C17} = {3C914E34-8776-49E0-B27B-9799514C8E3B}
+		{4402BA00-9DD8-42DB-8C15-07126855BA3B} = {E18CD0A0-CF71-41DD-82CB-B4A3D9828C17}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {93F3F415-3CCF-42AC-B64E-040C58946A7A}

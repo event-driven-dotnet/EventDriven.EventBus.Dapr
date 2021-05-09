@@ -131,17 +131,16 @@ services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
 
 > **Note**: **EventDriven.SchemaValidator.Json** uses `JSchemaGenerator` from Newtonsoft.Json.Schema.Generation, which makes all fields *required* by default. To make fields optional, you need to use **EventDriven.SchemaRegistry.Api** to update the schema by removing required fields.
 
-To retrieve, create, update and delete schemas from the schema registry for the publisher, you can run the **EventDriven.SchemaRegistry.Api** project, specifying the same `app-id` as the publisher.
+To retrieve, create, update and delete schemas from the schema registry for the publisher, you can run the **EventDriven.SchemaRegistry.Api** project.
 
 ```
-dapr run --app-id publisher --app-port 5100 -- dotnet run --urls "http://localhost:5100"
+dapr run --app-id schema-registry-api --app-port 5100 -- dotnet run --urls "http://localhost:5100"
 ```
 
-Then open a browser at http://localhost:5100/swagger to execute GET, POST, PUT and DELETE requests. To view all the registered topics for the publisher, you can connect to the Redis container directly and use the redis-cli.
+Then open a browser at http://localhost:5100/swagger to execute GET, POST, PUT and DELETE requests. To view all the registered topics for the publisher, you can connect to the schema datastore directly, for example, using a MongoDB client such as [Robot 3T](https://robomongo.org/).
 
 ```
-docker run --rm -it --link dapr_redis redis redis-cli -h dapr_redis
-KEYS publisher*
+docker run --name mongo -p 27017:27017 -v ~/mongo/data:/data/db -d mongo
 ```
 
 ## Samples

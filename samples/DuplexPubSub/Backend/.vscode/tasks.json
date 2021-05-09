@@ -42,7 +42,8 @@
             "appId": "backend",
             "appPort": 5000,
             "label": "daprd-debug",
-            "type": "daprd"
+            "type": "daprd",
+            "componentsPath": "../dapr/components"
         },
         {
             "appId": "backend",

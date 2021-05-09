@@ -19,6 +19,30 @@ The WeatherGenerator subscribes to the `WeatherForecastRequestedEvent`, creates 
 
 > **Note**: For demo purposes the `WeatherForecastController` in the Backend service blocks until the `WeatherForecastGeneratedEvent` is handled. In a real-world scenario you would instead subscribe this event using [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr), so that the HTTP request from the Frontend does not block.
 
+## Running MongoDB and LocalStack 
+
+1. Run MongoDB using Docker for use with the Schema Registry.
+
+   ```
+   docker run --name mongo -p 27017:27017 -v ~/mongo/data:/data/db -d mongo
+   ```
+
+2. *Optional:* Run [LocalStack](https://github.com/localstack/localstack) for use of [AWS SNS+SQS](https://docs.dapr.io/operations/components/setup-pubsub/supported-pubsub/setup-aws-snssqs/) with PubSub.
+   - Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) (version 2 or greater).
+   - [Configure](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) AWS CLI.
+     - For access key and secret, enter: test
+     - Enter a valid region.
+
+   ```
+   aws configure
+   ```
+
+   - Run LocalStack using Docker.
+
+   ```
+   docker run --name localstack --rm -p 4566:4566 -p 4571:4571 -d localstack/localstack
+   ```
+
 ## Running the Sample
 
 1. Open a terminal at the **Frontend** project root.
@@ -32,14 +56,14 @@ The WeatherGenerator subscribes to the `WeatherForecastRequestedEvent`, creates 
    - Run the following Dapr command to start the weather-generator.
 
     ```
-    dapr run --app-id weather-generator --app-port 5100 -- dotnet run
+    dapr run --app-id weather-generator --app-port 5100 --components-path ../dapr/components -- dotnet run
     ```
 
 3. Open a terminal at the **Backend** project root.
    - Run the following Dapr command to start the backend.
 
     ```
-    dapr run --app-id backend --app-port 5000 -- dotnet run
+    dapr run --app-id backend --app-port 5000 --components-path ../dapr/components -- dotnet run
     ```
 
 4. Open a terminal and run `dapr dashboard`.

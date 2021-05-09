@@ -42,7 +42,8 @@
             "appId": "publisher",
             "label": "daprd-debug",
             "type": "daprd",
-            "dependsOn": "build"
+            "dependsOn": "build",
+            "componentsPath": "../dapr/components"
         },
         {
             "appId": "publisher",
