@@ -45,7 +45,22 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<ISchemaGenerator, JsonSchemaGenerator>();
                 services.AddSingleton<ISchemaValidator, JsonSchemaValidator>();
             }
-            services.AddDaprSchemaRegistry(schemaOptions.SchemaRegistryStateStoreName);
+
+            switch (schemaOptions.SchemaRegistryType)
+            {
+                case SchemaRegistryType.Dapr:
+                    services.AddDaprSchemaRegistry(options => 
+                        options.StateStoreName = schemaOptions.DaprStateStoreOptions.StateStoreName);
+                    break;
+                case SchemaRegistryType.Mongo:
+                    services.AddMongoSchemaRegistry(options =>
+                    {
+                        options.ConnectionString = schemaOptions.MongoStateStoreOptions.ConnectionString;
+                        options.DatabaseName = schemaOptions.MongoStateStoreOptions.DatabaseName;
+                        options.SchemasCollectionName = schemaOptions.MongoStateStoreOptions.SchemasCollectionName;
+                    });
+                    break;
+            }
             return services;
         }
     }

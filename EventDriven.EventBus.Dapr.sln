@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", 
 ProjectSection(SolutionItems) = preProject
 	samples\DuplexPubSub\dapr\components\mongodb-statestore.yml = samples\DuplexPubSub\dapr\components\mongodb-statestore.yml
 	samples\DuplexPubSub\dapr\components\snssqs-pubsub.yaml = samples\DuplexPubSub\dapr\components\snssqs-pubsub.yaml
+	samples\DuplexPubSub\dapr\components\pubsub.yaml = samples\DuplexPubSub\dapr\components\pubsub.yaml
+	samples\DuplexPubSub\dapr\components\statestore.yaml = samples\DuplexPubSub\dapr\components\statestore.yaml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{E18CD0A0-CF71-41DD-82CB-B4A3D9828C17}"
@@ -52,6 +54,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", 
 ProjectSection(SolutionItems) = preProject
 	samples\SimplePubSub\dapr\components\mongodb-statestore.yml = samples\SimplePubSub\dapr\components\mongodb-statestore.yml
 	samples\SimplePubSub\dapr\components\snssqs-pubsub.yaml = samples\SimplePubSub\dapr\components\snssqs-pubsub.yaml
+	samples\SimplePubSub\dapr\components\pubsub.yaml = samples\SimplePubSub\dapr\components\pubsub.yaml
+	samples\SimplePubSub\dapr\components\statestore.yaml = samples\SimplePubSub\dapr\components\statestore.yaml
 EndProjectSection
 EndProject
 Global
