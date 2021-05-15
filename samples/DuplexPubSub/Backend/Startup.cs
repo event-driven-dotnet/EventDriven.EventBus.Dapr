@@ -41,7 +41,7 @@ namespace Backend
             var eventBusSchemaOptions = new DaprEventBusSchemaOptions();
             Configuration.GetSection(nameof(DaprEventBusSchemaOptions)).Bind(eventBusSchemaOptions);
 
-            // Add Dapr service bus
+            // Add Dapr event bus
             services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
             {
                 options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;

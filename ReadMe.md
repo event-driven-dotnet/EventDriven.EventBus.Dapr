@@ -2,6 +2,14 @@
 
 An event bus abstraction over Dapr pub/sub.
 
+## Prerequisites
+- [.NET Core SDK](https://dotnet.microsoft.com/download) (5.0 or greater)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [MongoDB Docker](https://hub.docker.com/_/mongo): `docker run --name mongo -d -p 27017:27017 -v /tmp/mongo/data:/data/db mongo`
+- [MongoDB Client](https://robomongo.org/download):
+  - Download Robo 3T only.
+  - Add connection to localhost on port 27017.
+
 ## Introduction
 
 [Dapr](https://dapr.io/), which stands for **D**istributed **Ap**plication **R**untime, uses a [sidecar pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/sidecar) to provide a [pub/sub abstraction](https://docs.dapr.io/developing-applications/building-blocks/pubsub/pubsub-overview/) over message brokers and queuing systems, including [AWS SNS+SQS](https://www.helenanderson.co.nz/sns-sqs/), [GCP Pub/Sub](https://cloud.google.com/pubsub), [Azure Events Hub](https://azure.microsoft.com/en-us/services/event-hubs/) and several [others](https://docs.dapr.io/operations/components/setup-pubsub/supported-pubsub/).
@@ -13,6 +21,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
 ## Packages
 - [EventDriven.EventBus.Abstractions](https://www.nuget.org/packages/EventDriven.EventBus.Abstractions)
 - [EventDriven.EventBus.Dapr](https://www.nuget.org/packages/EventDriven.EventBus.Dapr)
+- [EventDriven.SchemaRegistry.Mongo](https://www.nuget.org/packages/EventDriven.SchemaRegistry.Mongo)
 
 ## Usage
 
@@ -22,7 +31,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     public void ConfigureServices(IServiceCollection services)
     {
         // Add Dapr Event Bus
-        services.AddDaprEventBus(Constants.DaprPubSubName);
+        services.AddDaprEventBus(eventBusOptions.DaprPubSubName);
     }
     ```
 
@@ -108,40 +117,54 @@ When you enable Schema Registry for the Dapr Event Bus, messages sent to the Eve
 
 > **Note**: Schema evolution rules for Json allow the addition of fields, which are then ignored by consumers. If fields are not required, they can be omitted and consumers will get default values when they deserialize messages.
 
-The Schema Registry only validates messages when they are published to the Event Bus. Therefore, it is only necessary to enable Schema Registry for publishers, not subscribers. Schema registry options are available when adding Dapr Event Bus.
+The Schema Registry only validates messages when they are published to the Event Bus. Therefore, it is only necessary to enable Schema Registry for publishers, not subscribers.
+
+First add the following sections to appsettings.json:
+
+```json
+"DaprEventBusOptions": {
+  "PubSubName": "pubsub"
+},
+"DaprEventBusSchemaOptions": {
+  "UseSchemaRegistry": true,
+  "SchemaValidatorType": "Json",
+  "SchemaRegistryType": "Mongo",
+  "AddSchemaOnPublish": true,
+  "MongoStateStoreOptions": {
+    "ConnectionString": "mongodb://localhost:27017",
+    "DatabaseName": "schema-registry",
+    "SchemasCollectionName": "schemas"
+  }
+}
+```
+
+Then add code to `ConfigureServices` that reads these configuration settings.
 
 ```csharp
-// Configuration
 var eventBusOptions = new DaprEventBusOptions();
 hostContext.Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
-var stateStoreOptions = new DaprStateStoreOptions();
-hostContext.Configuration.GetSection(nameof(DaprStateStoreOptions)).Bind(stateStoreOptions);
+var eventBusSchemaOptions = new DaprEventBusSchemaOptions();
+hostContext.Configuration.GetSection(nameof(DaprEventBusSchemaOptions)).Bind(eventBusSchemaOptions);
+```
 
-// Add Dapr service bus and enable schema registry with schemas added on publish.
+Lastly set schema registry options when adding Dapr Event Bus.
+
+```csharp
 services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
 {
-    options.UseSchemaRegistry = true;
-    options.SchemaRegistryStateStoreName = stateStoreOptions.StateStoreName;
-    options.SchemaValidatorType = SchemaValidatorType.Json;
-    options.AddSchemaOnPublish = true;
+    options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;
+    options.SchemaRegistryType = eventBusSchemaOptions.SchemaRegistryType;
+    options.MongoStateStoreOptions = eventBusSchemaOptions.MongoStateStoreOptions;
+    options.SchemaValidatorType = eventBusSchemaOptions.SchemaValidatorType;
+    options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;
 });
 ```
 
 `UseSchemaRegistry` enables use of the Schema Registry. `SchemaValidatorType` specifies the type of schema validator to use (the default is `Json`). `AddSchemaOnPublish` will add a generated schema to the Schema Registry if no schema has been previously registered for a given topic.
 
-> **Note**: **EventDriven.SchemaValidator.Json** uses `JSchemaGenerator` from Newtonsoft.Json.Schema.Generation, which makes all fields *required* by default. To make fields optional, you need to use **EventDriven.SchemaRegistry.Api** to update the schema by removing required fields.
+> **Note**: **EventDriven.SchemaValidator.Json** uses `JSchemaGenerator` from [Newtonsoft.Json.Schema.Generation](https://www.newtonsoft.com/jsonschema/help/html/GeneratingSchemas.htm), which makes all fields *required* by default. To make fields optional, you need to use [EventDriven.SchemaRegistry.Api](https://github.com/event-driven-dotnet/EventDriven.SchemaRegistry.Api) to update the schema by removing required fields.
 
-To retrieve, create, update and delete schemas from the schema registry for the publisher, you can run the **EventDriven.SchemaRegistry.Api** project.
-
-```
-dapr run --app-id schema-registry-api --app-port 5100 -- dotnet run --urls "http://localhost:5100"
-```
-
-Then open a browser at http://localhost:5100/swagger to execute GET, POST, PUT and DELETE requests. To view all the registered topics for the publisher, you can connect to the schema datastore directly, for example, using a MongoDB client such as [Robot 3T](https://robomongo.org/).
-
-```
-docker run --name mongo -p 27017:27017 -v ~/mongo/data:/data/db -d mongo
-```
+To view all the registered schemas you can connect to the schema datastore directly, for example, using a MongoDB client such as [Robot 3T](https://robomongo.org/).
 
 ## Samples
 
