@@ -1,5 +1,4 @@
 using EventDriven.EventBus.Dapr;
-using EventDriven.SchemaRegistry.Dapr;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,7 +31,6 @@ namespace Publisher
                     {
                         options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;
                         options.SchemaRegistryType = eventBusSchemaOptions.SchemaRegistryType;
-                        options.DaprStateStoreOptions = eventBusSchemaOptions.DaprStateStoreOptions;
                         options.MongoStateStoreOptions = eventBusSchemaOptions.MongoStateStoreOptions;
                         options.SchemaValidatorType = eventBusSchemaOptions.SchemaValidatorType;
                         options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;

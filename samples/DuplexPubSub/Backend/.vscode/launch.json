@@ -34,6 +34,27 @@
             "processId": "${command:pickProcess}",
             "preLaunchTask": "daprd-debug",
             "postDebugTask": "daprd-down"
+        },
+        {
+            "name": ".NET Core Launch (web) with Dapr",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "daprd-debug",
+            "program": "${workspaceFolder}/bin/Debug/net5.0/Backend.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\\\bNow listening on:\\\\s+(https?://\\\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            },
+            "postDebugTask": "daprd-down"
         }
     ]
 }

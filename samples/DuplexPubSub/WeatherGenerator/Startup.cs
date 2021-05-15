@@ -1,6 +1,4 @@
-using Common;
 using EventDriven.EventBus.Dapr;
-using EventDriven.SchemaRegistry.Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +37,6 @@ namespace WeatherGenerator
             {
                 options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;
                 options.SchemaRegistryType = eventBusSchemaOptions.SchemaRegistryType;
-                options.DaprStateStoreOptions = eventBusSchemaOptions.DaprStateStoreOptions;
                 options.MongoStateStoreOptions = eventBusSchemaOptions.MongoStateStoreOptions;
                 options.SchemaValidatorType = eventBusSchemaOptions.SchemaValidatorType;
                 options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;

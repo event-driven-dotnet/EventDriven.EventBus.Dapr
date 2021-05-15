@@ -6,11 +6,6 @@ namespace EventDriven.EventBus.Dapr
     public enum SchemaRegistryType
     {
         /// <summary>
-        /// Dapr schema registry.
-        /// </summary>
-        Dapr,
-
-        /// <summary>
         /// Mongo schema registry.
         /// </summary>
         Mongo

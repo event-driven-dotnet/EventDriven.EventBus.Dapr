@@ -1,8 +1,6 @@
 using Backend.Handlers;
 using Backend.Repositories;
 using EventDriven.EventBus.Dapr;
-using EventDriven.SchemaRegistry.Dapr;
-using EventDriven.SchemaRegistry.Mongo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -48,7 +46,6 @@ namespace Backend
             {
                 options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;
                 options.SchemaRegistryType = eventBusSchemaOptions.SchemaRegistryType;
-                options.DaprStateStoreOptions = eventBusSchemaOptions.DaprStateStoreOptions;
                 options.MongoStateStoreOptions = eventBusSchemaOptions.MongoStateStoreOptions;
                 options.SchemaValidatorType = eventBusSchemaOptions.SchemaValidatorType;
                 options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;

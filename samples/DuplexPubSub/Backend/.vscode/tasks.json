@@ -43,7 +43,7 @@
             "appPort": 5000,
             "label": "daprd-debug",
             "type": "daprd",
-            "componentsPath": "../dapr/components"
+            "dependsOn": "build"
         },
         {
             "appId": "backend",

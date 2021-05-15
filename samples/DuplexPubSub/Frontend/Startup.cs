@@ -1,5 +1,4 @@
 using System;
-using Dapr.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

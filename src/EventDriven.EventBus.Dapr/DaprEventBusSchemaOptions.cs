@@ -1,5 +1,4 @@
-﻿using EventDriven.SchemaRegistry.Dapr;
-using EventDriven.SchemaRegistry.Mongo;
+﻿using EventDriven.SchemaRegistry.Mongo;
 
 namespace EventDriven.EventBus.Dapr
 {
@@ -22,11 +21,6 @@ namespace EventDriven.EventBus.Dapr
         /// Schema validator type.
         /// </summary>
         public SchemaValidatorType SchemaValidatorType { get; set; }
-
-        /// <summary>
-        /// Dapr state store options.
-        /// </summary>
-        public DaprStateStoreOptions DaprStateStoreOptions { get; set; }
 
         /// <summary>
         /// Mongo state store options.
