@@ -43,7 +43,7 @@
             "appPort": 5100,
             "label": "daprd-debug",
             "type": "daprd",
-            "componentsPath": "../dapr/components"
+            "dependsOn": "build"
         },
         {
             "appId": "weather-generator",

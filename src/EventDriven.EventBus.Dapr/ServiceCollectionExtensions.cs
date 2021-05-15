@@ -3,6 +3,7 @@ using System.Text.Json;
 using EventDriven.EventBus.Abstractions;
 using EventDriven.EventBus.Dapr;
 using EventDriven.SchemaRegistry.Abstractions;
+using EventDriven.SchemaRegistry.Mongo;
 using EventDriven.SchemaValidator.Json;
 
 // ReSharper disable once CheckNamespace
@@ -32,11 +33,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IEventBus, DaprEventBus>();
             services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName);
 
-            var schemaOptions = new DaprEventBusSchemaOptions();
-            configureSchemaOptions ??= options =>
+            var schemaOptions = new DaprEventBusSchemaOptions
             {
-                options.UseSchemaRegistry = false;
+                UseSchemaRegistry = false,
+                MongoStateStoreOptions = new MongoStateStoreOptions()
             };
+            configureSchemaOptions ??= options => options = schemaOptions;
             configureSchemaOptions.Invoke(schemaOptions);
             services.Configure(configureSchemaOptions);
 
@@ -45,7 +47,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<ISchemaGenerator, JsonSchemaGenerator>();
                 services.AddSingleton<ISchemaValidator, JsonSchemaValidator>();
             }
-            services.AddDaprSchemaRegistry(schemaOptions.SchemaRegistryStateStoreName);
+
+            switch (schemaOptions.SchemaRegistryType)
+            {
+                case SchemaRegistryType.Mongo:
+                    services.AddMongoSchemaRegistry(options =>
+                    {
+                        options.ConnectionString = schemaOptions.MongoStateStoreOptions.ConnectionString;
+                        options.DatabaseName = schemaOptions.MongoStateStoreOptions.DatabaseName;
+                        options.SchemasCollectionName = schemaOptions.MongoStateStoreOptions.SchemasCollectionName;
+                    });
+                    break;
+            }
             return services;
         }
     }

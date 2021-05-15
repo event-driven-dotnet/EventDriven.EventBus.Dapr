@@ -1,8 +1,6 @@
 using Backend.Handlers;
 using Backend.Repositories;
-using Common;
 using EventDriven.EventBus.Dapr;
-using EventDriven.SchemaRegistry.Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,16 +38,17 @@ namespace Backend
             // Configuration
             var eventBusOptions = new DaprEventBusOptions();
             Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
-            var stateStoreOptions = new DaprStateStoreOptions();
-            Configuration.GetSection(nameof(DaprStateStoreOptions)).Bind(stateStoreOptions);
+            var eventBusSchemaOptions = new DaprEventBusSchemaOptions();
+            Configuration.GetSection(nameof(DaprEventBusSchemaOptions)).Bind(eventBusSchemaOptions);
 
             // Add Dapr service bus
             services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
             {
-                options.UseSchemaRegistry = true;
-                options.SchemaRegistryStateStoreName = stateStoreOptions.StateStoreName;
-                options.SchemaValidatorType = SchemaValidatorType.Json;
-                options.AddSchemaOnPublish = true;
+                options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;
+                options.SchemaRegistryType = eventBusSchemaOptions.SchemaRegistryType;
+                options.MongoStateStoreOptions = eventBusSchemaOptions.MongoStateStoreOptions;
+                options.SchemaValidatorType = eventBusSchemaOptions.SchemaValidatorType;
+                options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;
             });
         }
 

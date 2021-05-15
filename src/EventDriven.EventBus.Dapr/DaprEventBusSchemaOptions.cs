@@ -1,4 +1,6 @@
-﻿namespace EventDriven.EventBus.Dapr
+﻿using EventDriven.SchemaRegistry.Mongo;
+
+namespace EventDriven.EventBus.Dapr
 {
     /// <summary>
     /// DaprEventBus schema options.
@@ -11,14 +13,19 @@
         public bool UseSchemaRegistry { get; set; }
 
         /// <summary>
-        /// The name of the state store component to use.
+        /// Schema registry type.
         /// </summary>
-        public string SchemaRegistryStateStoreName { get; set; } = "statestore";
+        public SchemaRegistryType SchemaRegistryType { get; set; }
 
         /// <summary>
         /// Schema validator type.
         /// </summary>
         public SchemaValidatorType SchemaValidatorType { get; set; }
+
+        /// <summary>
+        /// Mongo state store options.
+        /// </summary>
+        public MongoStateStoreOptions MongoStateStoreOptions { get; set; }
 
         /// <summary>
         /// Add schema to registry on publish if not previously registered.
