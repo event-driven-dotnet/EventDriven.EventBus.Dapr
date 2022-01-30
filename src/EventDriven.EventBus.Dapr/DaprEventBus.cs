@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+using EventDriven.EventBus.Abstractions;
 using EventDriven.SchemaRegistry.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -13,8 +14,8 @@ namespace EventDriven.EventBus.Dapr
     /// </summary>
     public class DaprEventBus : Abstractions.EventBus
     {
-        private readonly IOptions<DaprEventBusOptions> _options;
-        private readonly IOptions<DaprEventBusSchemaOptions> _schemaOptions;
+        private readonly IOptions<DaprEventBusOptions> _daprEventBusOptions;
+        private readonly IOptions<DaprEventBusSchemaOptions> _daprEventBusSchemaOptions;
         private readonly ILogger<DaprEventBus> _logger;
         private readonly DaprClient _dapr;
         private readonly ISchemaGenerator _schemaGenerator;
@@ -28,24 +29,26 @@ namespace EventDriven.EventBus.Dapr
         /// <param name="schemaGenerator">Schema generator.</param>
         /// <param name="schemaValidator">Schema validator.</param>
         /// <param name="schemaRegistry">Schema registry.</param>
-        /// <param name="options">DaprEventBus options.</param>
-        /// <param name="schemaOptions">Schema registry options.</param>
+        /// <param name="daprEventBusOptions">DaprEventBus options.</param>
+        /// <param name="daprEventBusSchemaOptions">Schema registry options.</param>
+        /// <param name="eventBusOptions">Event bus options.</param>
         /// <param name="logger">Logger for DaprEventBus.</param>
         public DaprEventBus(
             DaprClient dapr,
             ISchemaGenerator schemaGenerator,
             ISchemaValidator schemaValidator,
             ISchemaRegistry schemaRegistry,
-            IOptions<DaprEventBusOptions> options,
-            IOptions<DaprEventBusSchemaOptions> schemaOptions,
-            ILogger<DaprEventBus> logger)
+            IOptions<DaprEventBusOptions> daprEventBusOptions,
+            IOptions<DaprEventBusSchemaOptions> daprEventBusSchemaOptions,
+            IOptions<EventBusOptions> eventBusOptions,
+            ILogger<DaprEventBus> logger) : base(eventBusOptions.Value)
         {
             _dapr = dapr ?? throw new ArgumentNullException(nameof(dapr));
             _schemaGenerator = schemaGenerator ?? throw new ArgumentNullException(nameof(schemaGenerator));
             _schemaValidator = schemaValidator ?? throw new ArgumentNullException(nameof(schemaValidator));
             _schemaRegistry = schemaRegistry ?? throw new ArgumentNullException(nameof(schemaRegistry));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-            _schemaOptions = schemaOptions ?? throw new ArgumentNullException(nameof(schemaOptions));
+            _daprEventBusOptions = daprEventBusOptions ?? throw new ArgumentNullException(nameof(daprEventBusOptions));
+            _daprEventBusSchemaOptions = daprEventBusSchemaOptions ?? throw new ArgumentNullException(nameof(daprEventBusSchemaOptions));
             _logger = logger;
         }
 
@@ -58,13 +61,13 @@ namespace EventDriven.EventBus.Dapr
             if (@event is null) throw new ArgumentNullException(nameof(@event));
             var topicName = GetTopicName(@event.GetType(), topic, prefix);
 
-            if (_schemaOptions.Value.UseSchemaRegistry)
+            if (_daprEventBusSchemaOptions.Value.UseSchemaRegistry)
             {
                 // Get schema
                 var schema = await _schemaRegistry.GetSchema(topicName);
                 if (schema == null)
                 {
-                    if (!_schemaOptions.Value.AddSchemaOnPublish)
+                    if (!_daprEventBusSchemaOptions.Value.AddSchemaOnPublish)
                     {
                         _logger.LogError("No schema registered for {TopicName}", topicName);
                         throw new SchemaNotRegisteredException(topicName);
@@ -100,7 +103,7 @@ namespace EventDriven.EventBus.Dapr
                 }
             }
 
-            await _dapr.PublishEventAsync(_options.Value.PubSubName, topicName, @event);
+            await _dapr.PublishEventAsync(_daprEventBusOptions.Value.PubSubName, topicName, @event);
         }
     }
 }

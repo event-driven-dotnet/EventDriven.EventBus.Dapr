@@ -1,4 +1,6 @@
-﻿namespace EventDriven.EventBus.Dapr
+﻿using EventDriven.EventBus.Abstractions;
+
+namespace EventDriven.EventBus.Dapr
 {
     /// <summary>
     /// DaprEventBus options.
@@ -9,5 +11,10 @@
         /// Dapr PubSub component name.
         /// </summary>
         public string PubSubName { get; set; } = "pubsub";
+
+        /// <summary>
+        /// Event bus options.
+        /// </summary>
+        public EventBusOptions EventBusOptions { get; set; }
     }
 }

@@ -84,7 +84,9 @@ namespace Microsoft.AspNetCore.Builder
                         logger?.LogInformation("Handling event: {EventId}", @event.Id);
                         try
                         {
-                            await handler.HandleAsync(@event);
+                            if (eventBusOptions?.Value.EventBusOptions?.EnableEventCache == false
+                                || eventBus.EventCache.TryAdd(@event))
+                                await handler.HandleAsync(@event);
                         }
                         catch (Exception e)
                         {

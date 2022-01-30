@@ -10,26 +10,29 @@ using Microsoft.Extensions.Configuration;
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Provides extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+    /// Provides extension methods for <see cref="T:IServiceCollection" />.
     /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds DaprEventBus services to the provided <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// Adds DaprEventBus services to the provided <see cref="T:IServiceCollection" />.
         /// </summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /></param>
+        /// <param name="services">The <see cref="T:IServiceCollection" /></param>
         /// <param name="configuration">The application's <see cref="IConfiguration"/>.</param>
         /// <param name="useSchemaRegistry">True to use schema registry</param>
-        /// <returns>The original <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
+        /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
         public static IServiceCollection AddDaprEventBus(this IServiceCollection services,
             IConfiguration configuration, bool useSchemaRegistry = false)
         {
-            var eventBusOptions = new DaprEventBusOptions();
-            var optionsConfigSection = configuration.GetSection(nameof(DaprEventBusOptions));
-            optionsConfigSection.Bind(eventBusOptions);
-            if (!optionsConfigSection.Exists())
+            services.AddDaprClient();
+            services.AddSingleton<IEventBus, DaprEventBus>();
+            var daprEventBusOptions = new DaprEventBusOptions();
+            var daprOptionsConfigSection = configuration.GetSection(nameof(DaprEventBusOptions));
+            daprOptionsConfigSection.Bind(daprEventBusOptions);
+            if (!daprOptionsConfigSection.Exists())
                 throw new Exception($"Configuration section '{nameof(DaprEventBusOptions)}' not present in app settings.");
-            
+            services.Configure<DaprEventBusOptions>(daprOptionsConfigSection);
+
             Action<DaprEventBusSchemaOptions> configureSchemaOptions = null;
             if (useSchemaRegistry)
             {
@@ -49,24 +52,29 @@ namespace Microsoft.Extensions.DependencyInjection
                 };
             }
 
-            return AddDaprEventBus(services, eventBusOptions.PubSubName, configureSchemaOptions);
+            return services.AddDaprEventBusSchema(configureSchemaOptions);
         }
 
         /// <summary>
-        /// Adds DaprEventBus services to the provided <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// Adds DaprEventBus services to the provided <see cref="T:IServiceCollection" />.
         /// </summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /></param>
+        /// <param name="services">The <see cref="T:IServiceCollection" /></param>
         /// <param name="pubSubName">The name of the pub sub component to use.</param>
         /// <param name="configureSchemaOptions">Configure schema registry options.</param>
-        /// <returns>The original <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
+        /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
         public static IServiceCollection AddDaprEventBus(this IServiceCollection services, string pubSubName,
             Action<DaprEventBusSchemaOptions> configureSchemaOptions = null)
         {
             services.AddDaprClient();
             services.AddSingleton<IEventBus, DaprEventBus>();
             services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName);
-            if (configureSchemaOptions == null) return services;
+            return services.AddDaprEventBusSchema(configureSchemaOptions);
+        }
 
+        private static IServiceCollection AddDaprEventBusSchema(this IServiceCollection services,
+            Action<DaprEventBusSchemaOptions> configureSchemaOptions = null)
+        {
+            if (configureSchemaOptions == null) return services;
             var schemaOptions = new DaprEventBusSchemaOptions
             {
                 UseSchemaRegistry = false,
