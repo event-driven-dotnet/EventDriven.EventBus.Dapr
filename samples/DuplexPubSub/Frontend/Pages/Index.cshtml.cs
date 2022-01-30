@@ -7,6 +7,7 @@ namespace Frontend.Pages
 {
     public class IndexModel : PageModel
     {
+        // ReSharper disable once NotAccessedField.Local
         private readonly ILogger<IndexModel> _logger;
 
         public WeatherForecast[] Forecasts { get; set; }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 using EventDriven.EventBus.Abstractions;
 using EventDriven.EventBus.Dapr;
 using EventDriven.SchemaRegistry.Abstractions;
@@ -73,7 +72,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 UseSchemaRegistry = false,
                 MongoStateStoreOptions = new MongoStateStoreOptions()
             };
-            configureSchemaOptions?.Invoke(schemaOptions);
+            configureSchemaOptions(schemaOptions);
             services.Configure(configureSchemaOptions);
 
             if (schemaOptions.SchemaValidatorType == SchemaValidatorType.Json)

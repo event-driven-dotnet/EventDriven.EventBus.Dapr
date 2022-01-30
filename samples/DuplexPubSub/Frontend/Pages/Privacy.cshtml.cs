@@ -5,6 +5,7 @@ namespace Frontend.Pages
 {
     public class PrivacyModel : PageModel
     {
+        // ReSharper disable once NotAccessedField.Local
         private readonly ILogger<PrivacyModel> _logger;
 
         public PrivacyModel(ILogger<PrivacyModel> logger)

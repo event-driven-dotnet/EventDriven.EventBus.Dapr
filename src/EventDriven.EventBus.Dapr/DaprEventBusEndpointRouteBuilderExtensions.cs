@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.Builder
             var eventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
 
             // Configure event bus
-            logger.LogInformation("Configuring event bus ...");
+            logger?.LogInformation("Configuring event bus ...");
             configure?.Invoke(eventBus);
 
             IEndpointConventionBuilder builder = null;
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 foreach (var topic in eventBus.Topics)
                 {
-                    logger.LogInformation("Mapping Post for topic: {TopicKey}", topic.Key);
+                    logger?.LogInformation("Mapping Post for topic: {TopicKey}", topic.Key);
                     builder = endpoints.MapPost(topic.Key, HandleMessage)
                         .WithTopic(eventBusOptions?.Value.PubSubName, topic.Key);
                 }
@@ -57,7 +57,7 @@ namespace Microsoft.AspNetCore.Builder
                     // Get handlers
                     var handlers = GetHandlersForRequest(context.Request.Path);
                     if (handlers == null) return;
-                    logger.LogInformation("Request handlers count: {HandlersCount}", handlers.Count);
+                    logger?.LogInformation("Request handlers count: {HandlersCount}", handlers.Count);
                     var handler1 = handlers.FirstOrDefault();
                     if (handler1 == null) return;
 
@@ -81,14 +81,14 @@ namespace Microsoft.AspNetCore.Builder
                     var errorOccurred = false;
                     foreach (var handler in handlers)
                     {
-                        logger.LogInformation("Handling event: {EventId}", @event.Id);
+                        logger?.LogInformation("Handling event: {EventId}", @event.Id);
                         try
                         {
                             await handler.HandleAsync(@event);
                         }
                         catch (Exception e)
                         {
-                            logger.LogInformation("Handler threw exception: {Message}", e);
+                            logger?.LogInformation("Handler threw exception: {Message}", e);
                             errorOccurred = true;
                         }
                     }
@@ -106,7 +106,7 @@ namespace Microsoft.AspNetCore.Builder
             List<IIntegrationEventHandler> GetHandlersForRequest(string path)
             {
                 var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
-                logger.LogInformation("Topic for request: {Topic}", topic);
+                logger?.LogInformation("Topic for request: {Topic}", topic);
 
                 if (eventBus.Topics.TryGetValue(topic, out var handlers))
                     return handlers;
@@ -117,7 +117,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 var eventType = handler.GetType().BaseType?.GenericTypeArguments[0];
                 if (eventType != null) return eventType;
-                logger.LogInformation("Cannot determine event type");
+                logger?.LogInformation("Cannot determine event type");
                 return null;
             }
 
@@ -128,7 +128,7 @@ namespace Microsoft.AspNetCore.Builder
                 if (!string.Equals(context.Request.ContentType, MediaTypeNames.Application.Json,
                     StringComparison.Ordinal))
                 {
-                    logger.LogInformation("Unsupported Content-Type header: {ContentType}",
+                    logger?.LogInformation("Unsupported Content-Type header: {ContentType}",
                         context.Request.ContentType);
                     return null;
                 }
@@ -141,7 +141,7 @@ namespace Microsoft.AspNetCore.Builder
                 }
                 catch (Exception e) when (e is JsonException || e is ArgumentNullException || e is NotSupportedException)
                 {
-                    logger.LogInformation("Unable to deserialize event from request '{RequestPath}': {Message}",
+                    logger?.LogInformation("Unable to deserialize event from request '{RequestPath}': {Message}",
                         context.Request.Path, e.Message);
                     return null;
                 }
