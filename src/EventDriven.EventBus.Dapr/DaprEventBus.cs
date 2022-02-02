@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using EventDriven.EventBus.Abstractions;
 using EventDriven.SchemaRegistry.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +30,6 @@ namespace EventDriven.EventBus.Dapr
         /// <param name="schemaRegistry">Schema registry.</param>
         /// <param name="daprEventBusOptions">DaprEventBus options.</param>
         /// <param name="daprEventBusSchemaOptions">Schema registry options.</param>
-        /// <param name="eventBusOptions">Event bus options.</param>
         /// <param name="logger">Logger for DaprEventBus.</param>
         public DaprEventBus(
             DaprClient dapr,
@@ -40,8 +38,7 @@ namespace EventDriven.EventBus.Dapr
             ISchemaRegistry schemaRegistry,
             IOptions<DaprEventBusOptions> daprEventBusOptions,
             IOptions<DaprEventBusSchemaOptions> daprEventBusSchemaOptions,
-            IOptions<EventBusOptions> eventBusOptions,
-            ILogger<DaprEventBus> logger) : base(eventBusOptions.Value)
+            ILogger<DaprEventBus> logger)
         {
             _dapr = dapr ?? throw new ArgumentNullException(nameof(dapr));
             _schemaGenerator = schemaGenerator ?? throw new ArgumentNullException(nameof(schemaGenerator));
