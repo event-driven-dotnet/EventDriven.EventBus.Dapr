@@ -36,8 +36,8 @@ namespace Microsoft.AspNetCore.Builder
             var logger = endpoints.ServiceProvider.GetService<ILogger<DaprEventBus>>();
             var eventBus = endpoints.ServiceProvider.GetService<IEventBus>();
             var daprClient = endpoints.ServiceProvider.GetService<DaprClient>();
-            var eventCache = endpoints.ServiceProvider.GetService<IEventCache>();
-            var eventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
+            var daprEventCache = endpoints.ServiceProvider.GetService<IDaprEventCache>();
+            var daprEventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
 
             // Configure event bus
             logger?.LogInformation("Configuring event bus ...");
@@ -50,7 +50,7 @@ namespace Microsoft.AspNetCore.Builder
                 {
                     logger?.LogInformation("Mapping Post for topic: {TopicKey}", topic.Key);
                     builder = endpoints.MapPost(topic.Key, HandleMessage)
-                        .WithTopic(eventBusOptions?.Value.PubSubName, topic.Key);
+                        .WithTopic(daprEventBusOptions?.Value.PubSubName, topic.Key);
                 }
 
                 async Task HandleMessage(HttpContext context)
@@ -85,8 +85,8 @@ namespace Microsoft.AspNetCore.Builder
                         logger?.LogInformation("Handling event: {EventId}", @event.Id);
                         try
                         {
-                            if (eventBusOptions?.Value.EventBusOptions?.EnableEventCache == false
-                                || eventCache != null && eventCache.TryAdd(@event))
+                            if (daprEventBusOptions?.Value.DaprEventCacheOptions.EnableEventCache == false
+                                || daprEventCache != null && await daprEventCache.TryAddAsync(@event))
                                 await handler.HandleAsync(@event);
                         }
                         catch (Exception e)

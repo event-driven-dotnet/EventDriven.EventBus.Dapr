@@ -1,6 +1,4 @@
-﻿using EventDriven.EventBus.Abstractions;
-
-namespace EventDriven.EventBus.Dapr
+﻿namespace EventDriven.EventBus.Dapr
 {
     /// <summary>
     /// DaprEventBus options.
@@ -13,8 +11,8 @@ namespace EventDriven.EventBus.Dapr
         public string PubSubName { get; set; } = "pubsub";
 
         /// <summary>
-        /// Event bus options.
+        /// Dapr event cache options.
         /// </summary>
-        public EventBusOptions EventBusOptions { get; set; }
+        public DaprEventCacheOptions DaprEventCacheOptions { get; set; } = new();
     }
 }

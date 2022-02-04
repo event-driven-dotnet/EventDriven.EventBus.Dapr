@@ -11,7 +11,9 @@ name: eventbus-simple-pubsub
 
 # dapr extension
 extensions:
-- name: dapr
+  - name: dapr
+    log-level: debug
+    components-path: "dapr/components"
 
 # define multiple services here
 # project: app.csproj # msbuild project path (relative to this file)
@@ -26,5 +28,9 @@ extensions:
 services:
 - name: publisher
   project: Publisher/Publisher.csproj
+  bindings:
+    - port: 5151
 - name: subscriber
   project: Subscriber/Subscriber.csproj
+  bindings:
+    - port: 5252

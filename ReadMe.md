@@ -3,7 +3,7 @@
 An event bus abstraction over Dapr pub/sub.
 
 ## Prerequisites
-- [.NET Core SDK](https://dotnet.microsoft.com/download) (5.0 or greater)
+- [.NET Core SDK](https://dotnet.microsoft.com/download) (6.0 or greater)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - [MongoDB Docker](https://hub.docker.com/_/mongo): `docker run --name mongo -d -p 27017:27017 -v /tmp/mongo/data:/data/db mongo`
 - [MongoDB Client](https://robomongo.org/download):
@@ -173,9 +173,7 @@ The **samples** folder contains two sample applications which use the Dapr Event
 1. The **SimplePubSub** sample contains two projects: **Publisher** and **Subscriber**. Every 5 seconds the _Publisher_ creates a new set of weather forecasts and publishes them to the event bus. The _Subscriber_ subscribes to the event by setting the `WeatherForecasts` property of `WeatherForecastRepository`, which is returned by the `Get` method of `WeatherForecastController`.
 2. The **DuplexPubSub** sample contains four projects: **Frontend**, **Backend**, **WeatherGenerator** and **Common**. The _Backend_ publishes a `WeatherForecastRequestedEvent` to the event bus in the `Get` method of the `WeatherForecastController`. The _WebGenerator_ handles the event by creating a set of weather forecasts and publishing them to the event bus with a `WeatherForecastGeneratedEvent`, which is handled by the _Backend_ by setting the `WeatherForecasts` property of the `WeatherForecastRepository`, so that new weather forecasts are returned by the `WeatherForecastController`. The _Frontend_ initiates the pub/sub process by using an `HttpClient` to call the _Backend_ when the user clicks the "Get Weather Forecasts" button.
 
-## Dapr Event Bus Packages
-
-The Dapr Event Bus consists of two NuGet packages: **EventDriven.EventBus.Abstractions** and **EventDriven.EventBus.Dapr**.
+## Packages
 
 ### EventDriven.EventBus.Abstractions
 
