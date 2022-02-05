@@ -7,7 +7,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.2.0-beta2</Version>
     <Authors>Tony Sneed</Authors>
-    <Company>Dapr .NET Extensions</Company>
     <Description>An event bus abstraction layer over Dapr pub/sub.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr</PackageProjectUrl>
@@ -22,16 +21,20 @@
 
   <ItemGroup>
     <PackageReference Include="Dapr.AspNetCore" Version="1.5.0" />
-    <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.2.0-beta2" />
+      <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.2.0-beta2" />
     <PackageReference Include="EventDriven.SchemaRegistry.Mongo" Version="1.2.0-beta1" />
     <PackageReference Include="EventDriven.SchemaValidator.Json" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\ReadMe.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\..\images\eda-logo.jpeg">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
+  
 </Project>
