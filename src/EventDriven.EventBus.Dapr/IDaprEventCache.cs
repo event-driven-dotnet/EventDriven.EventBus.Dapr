@@ -9,9 +9,9 @@ namespace EventDriven.EventBus.Dapr;
 public interface IDaprEventCache
 {
     /// <summary>
-    /// Dapr event bus options.
+    /// Dapr event cache options.
     /// </summary>
-    DaprEventBusOptions DaprEventBusOptions { get; set; }
+    DaprEventCacheOptions DaprEventCacheOptions { get; set; }
     
     /// <summary>
     /// Attempts to add the integration event to the event cache.
@@ -22,5 +22,5 @@ public interface IDaprEventCache
     /// Task contains true if the event was added to the event cache,
     /// false if the event is in the cache and not expired or it cannot be removed.
     /// </returns>
-    Task<bool> TryAddAsync(IIntegrationEvent @event);
+    Task<bool> TryAddAsync(IntegrationEvent @event);
 }

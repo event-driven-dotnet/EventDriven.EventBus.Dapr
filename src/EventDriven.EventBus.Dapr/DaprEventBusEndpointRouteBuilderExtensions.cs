@@ -38,6 +38,7 @@ namespace Microsoft.AspNetCore.Builder
             var daprClient = endpoints.ServiceProvider.GetService<DaprClient>();
             var daprEventCache = endpoints.ServiceProvider.GetService<IDaprEventCache>();
             var daprEventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
+            var daprEventCacheOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventCacheOptions>>();
 
             // Configure event bus
             logger?.LogInformation("Configuring event bus ...");
@@ -85,7 +86,7 @@ namespace Microsoft.AspNetCore.Builder
                         logger?.LogInformation("Handling event: {EventId}", @event.Id);
                         try
                         {
-                            if (daprEventBusOptions?.Value.DaprEventCacheOptions.EnableEventCache == false
+                            if (daprEventCacheOptions?.Value.EnableEventCache == false
                                 || daprEventCache != null && await daprEventCache.TryAddAsync(@event))
                                 await handler.HandleAsync(@event);
                         }
@@ -124,7 +125,7 @@ namespace Microsoft.AspNetCore.Builder
                 return null;
             }
 
-            async Task<IIntegrationEvent> GetEventFromRequestAsync(HttpContext context, 
+            async Task<IntegrationEvent> GetEventFromRequestAsync(HttpContext context, 
                 Type eventType, JsonSerializerOptions serializerOptions)
             {
                 // Check content type
@@ -140,7 +141,7 @@ namespace Microsoft.AspNetCore.Builder
                 try
                 {
                     var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType, serializerOptions);
-                    return (IIntegrationEvent)value;
+                    return (IntegrationEvent)value;
                 }
                 catch (Exception e) when (e is JsonException || e is ArgumentNullException || e is NotSupportedException)
                 {

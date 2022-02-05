@@ -38,4 +38,8 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\EventDriven.EventBus.Dapr\EventDriven.EventBus.Dapr.csproj" />
+    </ItemGroup>
+
 </Project>

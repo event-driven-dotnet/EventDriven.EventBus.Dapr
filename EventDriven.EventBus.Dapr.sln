@@ -50,9 +50,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{E18CD0A0-C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{4402BA00-9DD8-42DB-8C15-07126855BA3B}"
 ProjectSection(SolutionItems) = preProject
-	samples\SimplePubSub\dapr\components\snssqs-pubsub.yaml = samples\SimplePubSub\dapr\components\snssqs-pubsub.yaml
 	samples\SimplePubSub\dapr\components\pubsub.yaml = samples\SimplePubSub\dapr\components\pubsub.yaml
 	samples\SimplePubSub\dapr\components\statestore.yaml = samples\SimplePubSub\dapr\components\statestore.yaml
+	samples\SimplePubSub\dapr\components\pubsub-snssqs.yaml = samples\SimplePubSub\dapr\components\pubsub-snssqs.yaml
+	samples\SimplePubSub\dapr\components\statestore-mongodb.yaml = samples\SimplePubSub\dapr\components\statestore-mongodb.yaml
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDriven.EventBus.Dapr.EventCache.Mongo", "src\EventDriven.EventBus.Dapr.EventCache.Mongo\EventDriven.EventBus.Dapr.EventCache.Mongo.csproj", "{D8DA5FCC-27CC-4158-8A9E-CA397C4BD1A5}"
