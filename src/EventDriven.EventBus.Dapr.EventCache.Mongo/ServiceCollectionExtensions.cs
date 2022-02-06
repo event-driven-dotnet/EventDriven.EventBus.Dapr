@@ -26,7 +26,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDaprMongoEventCache(this IServiceCollection services,
         IConfiguration configuration)
     {
-        var daprEventCacheOptions = new DaprEventCacheOptions();
+        var daprEventCacheOptions = new DaprEventCacheOptions
+        {
+            DaprEventCacheType = DaprEventCacheType.Queryable,
+            EnableEventCacheCleanup = true,
+        };
         var daprOptionsConfigSection = configuration.GetSection(nameof(DaprEventCacheOptions));
         daprOptionsConfigSection.Bind(daprEventCacheOptions);
         if (!daprOptionsConfigSection.Exists())
@@ -35,9 +39,11 @@ public static class ServiceCollectionExtensions
         services.Configure<DaprEventCacheOptions>(options =>
         {
             options.DaprEventCacheType = daprEventCacheOptions.DaprEventCacheType;
-            options.DaprEventCacheType = daprEventCacheOptions.DaprEventCacheType;
-            options.EnableEventCacheCleanup = daprEventCacheOptions.EnableEventCacheCleanup;
             options.DaprStateStoreOptions = daprEventCacheOptions.DaprStateStoreOptions;
+            options.EnableEventCache = daprEventCacheOptions.EnableEventCache;
+            options.EventCacheTimeout = daprEventCacheOptions.EventCacheTimeout;
+            options.EnableEventCacheCleanup = daprEventCacheOptions.EnableEventCacheCleanup;
+            options.EventCacheCleanupInterval = daprEventCacheOptions.EventCacheCleanupInterval;
         });
 
         services.AddSingleton<IDaprEventCache, DaprEventCache>();
