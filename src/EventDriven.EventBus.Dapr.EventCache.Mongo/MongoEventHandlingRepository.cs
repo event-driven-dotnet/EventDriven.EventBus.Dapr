@@ -29,7 +29,9 @@ public class MongoEventHandlingRepository<TIntegrationEvent> : IEventHandlingRep
     /// <inheritdoc />
     public async Task<IEnumerable<EventWrapper<TIntegrationEvent>>> GetExpiredEventsAsync()
     {
-        var dtos = await GetEventWrapperDtosAsync();
+        var dtos = await DocumentRepository
+            .Queryable()
+            .ToListAsync();
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var expired = dtos
             .Select(e =>
@@ -44,29 +46,4 @@ public class MongoEventHandlingRepository<TIntegrationEvent> : IEventHandlingRep
             .ToList();
         return expired;
     }
-
-    /// <inheritdoc />
-    public async Task<int> RemoveExpiredEventsAsync()
-    {
-        int deleted = 0;
-        var expired = await GetExpiredEventsAsync();
-        foreach (var wrapper in expired)
-        {
-            var result = await DocumentRepository.DeleteOneAsync(e => e.Id == wrapper.Id);
-            deleted += result;
-        }
-        return deleted;
-    }
-
-    /// <summary>
-    /// Get event wrapper DTO's.
-    /// </summary>
-    /// <returns>
-    /// Task that will complete when the operation has completed.
-    /// Task contains an IEnumerable of EventWrapper DTO's.
-    /// </returns>
-    protected async Task<IEnumerable<EventWrapperDto>> GetEventWrapperDtosAsync() =>
-        await DocumentRepository
-            .Queryable()
-            .ToListAsync();
 }

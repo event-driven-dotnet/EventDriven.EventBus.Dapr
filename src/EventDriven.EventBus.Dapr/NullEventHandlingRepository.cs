@@ -13,10 +13,4 @@ public class NullEventHandlingRepository<TIntegrationEvent> : IEventHandlingRepo
     {
         throw new System.NotImplementedException();
     }
-
-    /// <inheritdoc />
-    public Task<int> RemoveExpiredEventsAsync()
-    {
-        throw new System.NotImplementedException();
-    }
 }

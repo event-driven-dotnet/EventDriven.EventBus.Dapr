@@ -53,9 +53,11 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="T:IServiceCollection" /></param>
     /// <param name="stateStoreName">The name of the state store component to use.</param>
     /// <param name="configureDaprStoreOptions">Configure Dapr store options.</param>
+    /// <param name="configureEventCacheOptions">Configure event cache options.</param>
     /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
     public static IServiceCollection AddDaprMongoEventCache(this IServiceCollection services,
-        string stateStoreName, Action<DaprStoreDatabaseSettings>? configureDaprStoreOptions = null)
+        string stateStoreName, Action<DaprStoreDatabaseSettings>? configureDaprStoreOptions = null,
+        Action<DaprEventCacheOptions>? configureEventCacheOptions = null)
     {
         var daprEventCacheOptions = new DaprEventCacheOptions
         {
@@ -64,12 +66,17 @@ public static class ServiceCollectionExtensions
             EnableEventCacheCleanup = true,
             DaprStateStoreOptions = new DaprStateStoreOptions { StateStoreName = stateStoreName }
         };
+
+        if (configureEventCacheOptions != null)
+            configureEventCacheOptions(daprEventCacheOptions);
         services.Configure<DaprEventCacheOptions>(options =>
         {
             options.DaprEventCacheType = daprEventCacheOptions.DaprEventCacheType;
-            options.DaprEventCacheType = daprEventCacheOptions.DaprEventCacheType;
-            options.EnableEventCacheCleanup = daprEventCacheOptions.EnableEventCacheCleanup;
             options.DaprStateStoreOptions = daprEventCacheOptions.DaprStateStoreOptions;
+            options.EnableEventCache = daprEventCacheOptions.EnableEventCache;
+            options.EventCacheTimeout = daprEventCacheOptions.EventCacheTimeout;
+            options.EnableEventCacheCleanup = daprEventCacheOptions.EnableEventCacheCleanup;
+            options.EventCacheCleanupInterval = daprEventCacheOptions.EventCacheCleanupInterval;
         });
 
         services.AddSingleton<IDaprEventCache, DaprEventCache>();

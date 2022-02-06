@@ -76,7 +76,13 @@ public class DaprEventCache : IDaprEventCache
             }
             
             // Remove expired events
-            await _eventHandlingRepository.RemoveExpiredEventsAsync();
+            var events = await _eventHandlingRepository.GetExpiredEventsAsync();
+            foreach (var @event in events)
+            {
+                if (@event.Value != null)
+                    await _dapr.DeleteStateAsync(DaprEventCacheOptions.DaprStateStoreOptions.StateStoreName,
+                        @event.Value.EventId, null, null, CancellationToken);
+            }
         }
         finally
         {
