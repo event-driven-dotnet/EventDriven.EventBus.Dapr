@@ -21,27 +21,59 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
 ## Packages
 - [EventDriven.EventBus.Abstractions](https://www.nuget.org/packages/EventDriven.EventBus.Abstractions)
 - [EventDriven.EventBus.Dapr](https://www.nuget.org/packages/EventDriven.EventBus.Dapr)
+- [EventDriven.EventBus.Dapr.EventCache.Mongo](https://www.nuget.org/packages/EventDriven.EventBus.Dapr.EventCache.Mongo)
 - [EventDriven.SchemaRegistry.Mongo](https://www.nuget.org/packages/EventDriven.SchemaRegistry.Mongo)
 
 ## Usage
 
-1. In both the _publisher_ and _subscriber_, you need to register the **Dapr Event Bus** with DI by calling `services.AddDaprEventBus` in `Startup.ConfigureServices`.
-
+1. In both the _publisher_ and _subscriber_, you need to register the **Dapr Event Bus** with DI.
+   - First add the following to **appsettings.json**.
+    ```json
+    "DaprEventBusOptions": {
+      "PubSubName": "pubsub"
+    },
+    "DaprEventCacheOptions": {
+      "DaprStateStoreOptions": {
+        "StateStoreName": "statestore-mongodb"
+      }
+    },
+    "DaprStoreDatabaseSettings": {
+      "ConnectionString": "mongodb://localhost:27017",
+      "DatabaseName": "daprStore",
+      "CollectionName": "daprCollection"
+    },
+    "DaprEventBusSchemaOptions": {
+      "UseSchemaRegistry": true,
+      "SchemaValidatorType": "Json",
+      "SchemaRegistryType": "Mongo",
+      "AddSchemaOnPublish": true,
+      "MongoStateStoreOptions": {
+        "ConnectionString": "mongodb://localhost:27017",
+        "DatabaseName": "schema-registry",
+        "SchemasCollectionName": "schemas"
+      }
+    }
+    ```
+   - Call `services.AddDaprEventBus` in `Startup.ConfigureServices`.
+   - Then call `services.AddDaprMongoEventCache`.
     ```csharp
     public void ConfigureServices(IServiceCollection services)
     {
         // Add Dapr Event Bus
-        services.AddDaprEventBus(eventBusOptions.DaprPubSubName);
+        services.AddDaprEventBus(Configuration, true);
+
+        // Add Dapr Mongo event cache
+        services.AddDaprMongoEventCache(Configuration);
     }
     ```
 
-2. Define a [C# record](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/exploration/records) that extends `IntegrationEvent`. For example, the following `WeatherForecastEvent` record does so by adding a `WeatherForecasts` property.
+1. Define a [C# record](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/exploration/records) that extends `IntegrationEvent`. For example, the following `WeatherForecastEvent` record does so by adding a `WeatherForecasts` property.
 
     ```csharp
     public record WeatherForecastEvent(IEnumerable<WeatherForecast> WeatherForecasts) : IntegrationEvent;
     ```
 
-3. In the publisher inject `IEventBus` into the constructor of a controller (Web API projects) or worker class (Worker Service projects). Then call `EventBus.PublishAsync`, passing the event you defined in step 2.
+2. In the publisher inject `IEventBus` into the constructor of a controller (Web API projects) or worker class (Worker Service projects). Then call `EventBus.PublishAsync`, passing the event you defined in step 2.
 
     ```csharp
     public class Worker : BackgroundService
@@ -65,7 +97,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     }
     ```
 
-4. In the subscriber create the same `IntegrationEvent` derived class as in the publisher. Then create an **event handler** that extends `IntegrationEventHandler<TIntegrationEvent>` where `TIntegrationEvent` is the event type you defined earlier.
+3. In the subscriber create the same `IntegrationEvent` derived class as in the publisher. Then create an **event handler** that extends `IntegrationEventHandler<TIntegrationEvent>` where `TIntegrationEvent` is the event type you defined earlier.
    - Override `HandleAsync` to perform a task when an event is received.
    - For example, `WeatherForecastEventHandler` sets `WeatherForecasts` on `WeatherForecastRepository` to the `WeatherForecasts` property of `WeatherForecastEvent`.
 
@@ -87,7 +119,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     }
     ```
 
-5. Lastly, in `Startup.Configure` in `app.UseEndpoints` call `endpoints.MapDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
+4. Lastly, in `Startup.Configure` in `app.UseEndpoints` call `endpoints.MapDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
    - Also call `app.UseRouting`, `app.UseCloudEvents`, `endpoints.MapSubscribeHandler`.
    - Make sure to add parameters to `Startup.Configure` to inject each handler you wish to use.
    - For example, to add the weather forecast handler, you must add a `WeatherForecastEventHandler` parameter to the `Configure` method.
@@ -118,47 +150,6 @@ When you enable Schema Registry for the Dapr Event Bus, messages sent to the Eve
 > **Note**: Schema evolution rules for Json allow the addition of fields, which are then ignored by consumers. If fields are not required, they can be omitted and consumers will get default values when they deserialize messages.
 
 The Schema Registry only validates messages when they are published to the Event Bus. Therefore, it is only necessary to enable Schema Registry for publishers, not subscribers.
-
-First add the following sections to appsettings.json:
-
-```json
-"DaprEventBusOptions": {
-  "PubSubName": "pubsub"
-},
-"DaprEventBusSchemaOptions": {
-  "UseSchemaRegistry": true,
-  "SchemaValidatorType": "Json",
-  "SchemaRegistryType": "Mongo",
-  "AddSchemaOnPublish": true,
-  "MongoStateStoreOptions": {
-    "ConnectionString": "mongodb://localhost:27017",
-    "DatabaseName": "schema-registry",
-    "SchemasCollectionName": "schemas"
-  }
-}
-```
-
-Then add code to `ConfigureServices` that reads these configuration settings.
-
-```csharp
-var eventBusOptions = new DaprEventBusOptions();
-hostContext.Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
-var eventBusSchemaOptions = new DaprEventBusSchemaOptions();
-hostContext.Configuration.GetSection(nameof(DaprEventBusSchemaOptions)).Bind(eventBusSchemaOptions);
-```
-
-Lastly set schema registry options when adding Dapr Event Bus.
-
-```csharp
-services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
-{
-    options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;
-    options.SchemaRegistryType = eventBusSchemaOptions.SchemaRegistryType;
-    options.MongoStateStoreOptions = eventBusSchemaOptions.MongoStateStoreOptions;
-    options.SchemaValidatorType = eventBusSchemaOptions.SchemaValidatorType;
-    options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;
-});
-```
 
 `UseSchemaRegistry` enables use of the Schema Registry. `SchemaValidatorType` specifies the type of schema validator to use (the default is `Json`). `AddSchemaOnPublish` will add a generated schema to the Schema Registry if no schema has been previously registered for a given topic.
 

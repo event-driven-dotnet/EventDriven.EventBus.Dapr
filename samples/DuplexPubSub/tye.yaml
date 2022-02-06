@@ -11,7 +11,9 @@ name: eventbus-duplex-pubsub
 
 # dapr extension
 extensions:
-- name: dapr
+  - name: dapr
+    log-level: debug
+    components-path: "dapr/components"
 
 # define multiple services here
 # project: app.csproj # msbuild project path (relative to this file)
@@ -27,12 +29,12 @@ services:
 - name: frontend
   project: Frontend/Frontend.csproj
   bindings:
-  - port: 5200
+  - port: 5121
 - name: backend
   project: Backend/Backend.csproj
   bindings:
-  - port: 5000
+  - port: 5221
 - name: weather-generator
   project: WeatherGenerator/WeatherGenerator.csproj
   bindings:
-  - port: 5100
+  - port: 5321

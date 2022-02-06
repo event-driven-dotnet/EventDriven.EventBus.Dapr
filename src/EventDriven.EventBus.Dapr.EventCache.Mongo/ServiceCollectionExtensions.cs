@@ -1,5 +1,6 @@
 // ReSharper disable once CheckNamespace
 
+using EventDriven.DependencyInjection.URF.Mongo;
 using EventDriven.EventBus.Abstractions;
 using EventDriven.EventBus.Dapr;
 using EventDriven.EventBus.Dapr.EventCache.Mongo;
@@ -43,7 +44,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
             MongoEventHandlingRepository<DaprIntegrationEvent>>();
         services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
-        return services.AddDaprStoreDatabaseSettings();
+        return services.AddMongoDbSettings<DaprStoreDatabaseSettings, EventWrapperDto>(configuration);
     }
 
     /// <summary>

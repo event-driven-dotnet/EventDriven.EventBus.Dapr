@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\EventDriven.EventBus.Dapr.EventCache.Mongo\EventDriven.EventBus.Dapr.EventCache.Mongo.csproj" />
     <ProjectReference Include="..\..\..\src\EventDriven.EventBus.Dapr\EventDriven.EventBus.Dapr.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>

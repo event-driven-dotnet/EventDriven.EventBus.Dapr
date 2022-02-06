@@ -1,6 +1,5 @@
 using Backend.Handlers;
 using Backend.Repositories;
-using EventDriven.EventBus.Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -35,21 +34,11 @@ namespace Backend
             // Add handlers
             services.AddSingleton<WeatherForecastGeneratedEventHandler>();
 
-            // Configuration
-            var eventBusOptions = new DaprEventBusOptions();
-            Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
-            var eventBusSchemaOptions = new DaprEventBusSchemaOptions();
-            Configuration.GetSection(nameof(DaprEventBusSchemaOptions)).Bind(eventBusSchemaOptions);
-
-            // Add Dapr event bus
-            services.AddDaprEventBus(eventBusOptions.PubSubName, options =>
-            {
-                options.UseSchemaRegistry = eventBusSchemaOptions.UseSchemaRegistry;
-                options.SchemaRegistryType = eventBusSchemaOptions.SchemaRegistryType;
-                options.MongoStateStoreOptions = eventBusSchemaOptions.MongoStateStoreOptions;
-                options.SchemaValidatorType = eventBusSchemaOptions.SchemaValidatorType;
-                options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;
-            });
+            // Add Dapr service bus
+            services.AddDaprEventBus(Configuration, true);
+            
+            // Add Dapr Mongo event cache
+            services.AddDaprMongoEventCache(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

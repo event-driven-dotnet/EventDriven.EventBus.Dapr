@@ -42,8 +42,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{BA881D2B-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{9E508385-DCEA-4BD5-A5B9-9BA715ABB79C}"
 ProjectSection(SolutionItems) = preProject
-	samples\DuplexPubSub\dapr\components\snssqs-pubsub.yaml = samples\DuplexPubSub\dapr\components\snssqs-pubsub.yaml
 	samples\DuplexPubSub\dapr\components\pubsub.yaml = samples\DuplexPubSub\dapr\components\pubsub.yaml
+	samples\DuplexPubSub\dapr\components\pubsub-snssqs.yaml = samples\DuplexPubSub\dapr\components\pubsub-snssqs.yaml
+	samples\DuplexPubSub\dapr\components\statestore-mongodb.yaml = samples\DuplexPubSub\dapr\components\statestore-mongodb.yaml
+	samples\DuplexPubSub\dapr\components\statestore.yaml = samples\DuplexPubSub\dapr\components\statestore.yaml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{E18CD0A0-CF71-41DD-82CB-B4A3D9828C17}"
