@@ -14,15 +14,15 @@
     <RepositoryUrl>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>event-bus event-driven event-driven-architecture dapr</PackageTags>
-    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.2.0-beta4</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.2.0-beta5</PackageReleaseNotes>
     <PackageId>EventDriven.EventBus.Dapr</PackageId>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapr.AspNetCore" Version="1.5.0" />
+    <PackageReference Include="Dapr.AspNetCore" Version="1.6.0" />
       <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.2.0-beta4" />
-    <PackageReference Include="EventDriven.SchemaRegistry.Mongo" Version="1.2.0-beta1" />
+    <PackageReference Include="EventDriven.SchemaRegistry.Mongo" Version="1.2.0-beta2" />
     <PackageReference Include="EventDriven.SchemaValidator.Json" Version="1.1.0" />
     <PackageReference Include="NeoSmart.AsyncLock" Version="3.2.1" />
   </ItemGroup>

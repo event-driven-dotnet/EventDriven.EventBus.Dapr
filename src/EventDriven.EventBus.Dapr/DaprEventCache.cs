@@ -16,11 +16,6 @@ public class DaprEventCache : IDaprEventCache
     private readonly IEventHandlingRepository<DaprIntegrationEvent> _eventHandlingRepository;
 
     /// <summary>
-    /// Lock timeout.
-    /// </summary>
-    protected TimeSpan LockTimeout { get; set; } = TimeSpan.FromSeconds(60);
-
-    /// <summary>
     /// Cleanup timer.
     /// </summary>
     protected Timer CleanupTimer { get; }
