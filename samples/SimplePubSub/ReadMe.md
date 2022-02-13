@@ -15,7 +15,7 @@ Demonstrates how to use Dapr Event Bus for simple pub/sub.
    - Run the following Dapr command to start the subscriber.
 
     ```
-    dapr run --app-id subscriber --app-port 5000 --components-path ../dapr/components -- dotnet run
+    dapr run --app-id subscriber --app-port 5252 --components-path ../dapr/components -- dotnet run
     ```
 
 2. Open a terminal at the **Publisher** project root.
@@ -25,7 +25,7 @@ Demonstrates how to use Dapr Event Bus for simple pub/sub.
     dapr run --app-id publisher --components-path ../dapr/components -- dotnet run
     ```
 
-3. Open a browser at http://localhost:5000/weatherforecast
+3. Open a browser at http://localhost:5151/weatherforecast
    - Refresh the page every few seconds to see a new set of values.
    - Note log output to each terminal.
 

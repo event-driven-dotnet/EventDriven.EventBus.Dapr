@@ -49,21 +49,21 @@ The WeatherGenerator subscribes to the `WeatherForecastRequestedEvent`, creates 
    - Run the following Dapr command to start the frontend.
 
     ```
-    dapr run --app-id frontend --app-port 5200 -- dotnet run
+    dapr run --app-id frontend --app-port 5121 -- dotnet run
     ```
 
 2. Open a terminal at the **WeatherGenerator** project root.
    - Run the following Dapr command to start the weather-generator.
 
     ```
-    dapr run --app-id weather-generator --app-port 5100 --components-path ../dapr/components -- dotnet run
+    dapr run --app-id weather-generator --app-port 5321 --components-path ../dapr/components -- dotnet run
     ```
 
 3. Open a terminal at the **Backend** project root.
    - Run the following Dapr command to start the backend.
 
     ```
-    dapr run --app-id backend --app-port 5000 --components-path ../dapr/components -- dotnet run
+    dapr run --app-id backend --app-port 5221 --components-path ../dapr/components -- dotnet run
     ```
 
 4. Open a terminal and run `dapr dashboard`.

@@ -43,7 +43,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{9E508385-DCEA-4BD5-A5B9-9BA715ABB79C}"
 ProjectSection(SolutionItems) = preProject
 	samples\DuplexPubSub\dapr\components\pubsub.yaml = samples\DuplexPubSub\dapr\components\pubsub.yaml
-	samples\DuplexPubSub\dapr\components\pubsub-snssqs.yaml = samples\DuplexPubSub\dapr\components\pubsub-snssqs.yaml
 	samples\DuplexPubSub\dapr\components\statestore-mongodb.yaml = samples\DuplexPubSub\dapr\components\statestore-mongodb.yaml
 	samples\DuplexPubSub\dapr\components\statestore.yaml = samples\DuplexPubSub\dapr\components\statestore.yaml
 EndProjectSection
@@ -54,11 +53,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", 
 ProjectSection(SolutionItems) = preProject
 	samples\SimplePubSub\dapr\components\pubsub.yaml = samples\SimplePubSub\dapr\components\pubsub.yaml
 	samples\SimplePubSub\dapr\components\statestore.yaml = samples\SimplePubSub\dapr\components\statestore.yaml
-	samples\SimplePubSub\dapr\components\pubsub-snssqs.yaml = samples\SimplePubSub\dapr\components\pubsub-snssqs.yaml
 	samples\SimplePubSub\dapr\components\statestore-mongodb.yaml = samples\SimplePubSub\dapr\components\statestore-mongodb.yaml
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDriven.EventBus.Dapr.EventCache.Mongo", "src\EventDriven.EventBus.Dapr.EventCache.Mongo\EventDriven.EventBus.Dapr.EventCache.Mongo.csproj", "{D8DA5FCC-27CC-4158-8A9E-CA397C4BD1A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "standby", "standby", "{3AC2B123-FD14-49B0-94AE-C0910BD909ED}"
+	ProjectSection(SolutionItems) = preProject
+		samples\DuplexPubSub\dapr\standby\pubsub-snssqs.yaml = samples\DuplexPubSub\dapr\standby\pubsub-snssqs.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "standby", "standby", "{336083B2-C9AB-4681-9D03-E536CBCB4DA7}"
+	ProjectSection(SolutionItems) = preProject
+		samples\SimplePubSub\dapr\standby\pubsub-snssqs.yaml = samples\SimplePubSub\dapr\standby\pubsub-snssqs.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +125,8 @@ Global
 		{E18CD0A0-CF71-41DD-82CB-B4A3D9828C17} = {3C914E34-8776-49E0-B27B-9799514C8E3B}
 		{4402BA00-9DD8-42DB-8C15-07126855BA3B} = {E18CD0A0-CF71-41DD-82CB-B4A3D9828C17}
 		{D8DA5FCC-27CC-4158-8A9E-CA397C4BD1A5} = {BA9F4C61-03E7-4616-986F-83AE2B651D3D}
+		{3AC2B123-FD14-49B0-94AE-C0910BD909ED} = {BA881D2B-4DB9-4C58-A3A0-85C73B1B9F74}
+		{336083B2-C9AB-4681-9D03-E536CBCB4DA7} = {E18CD0A0-CF71-41DD-82CB-B4A3D9828C17}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {93F3F415-3CCF-42AC-B64E-040C58946A7A}
