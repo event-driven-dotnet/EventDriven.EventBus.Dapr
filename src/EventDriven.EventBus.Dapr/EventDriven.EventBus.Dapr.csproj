@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.0-beta4</Version>
+    <Version>1.2.0</Version>
     <Authors>Tony Sneed</Authors>
     <Description>An event bus abstraction layer over Dapr pub/sub.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -14,15 +14,15 @@
     <RepositoryUrl>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>event-bus event-driven event-driven-architecture dapr</PackageTags>
-    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.2.0-beta5</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.2.0</PackageReleaseNotes>
     <PackageId>EventDriven.EventBus.Dapr</PackageId>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapr.AspNetCore" Version="1.6.0" />
-      <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.2.0-beta4" />
-    <PackageReference Include="EventDriven.SchemaRegistry.Mongo" Version="1.2.0-beta2" />
+      <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.2.0" />
+    <PackageReference Include="EventDriven.SchemaRegistry.Mongo" Version="1.2.0" />
     <PackageReference Include="EventDriven.SchemaValidator.Json" Version="1.1.0" />
     <PackageReference Include="NeoSmart.AsyncLock" Version="3.2.1" />
   </ItemGroup>
