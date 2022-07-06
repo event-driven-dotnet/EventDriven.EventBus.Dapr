@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <Authors>Tony Sneed</Authors>
     <Description>An event bus abstraction layer over Dapr pub/sub.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>event-bus event-driven event-driven-architecture dapr</PackageTags>
-    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.2.1</PackageReleaseNotes>
     <PackageId>EventDriven.EventBus.Dapr</PackageId>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<Nullable>disable</Nullable>
