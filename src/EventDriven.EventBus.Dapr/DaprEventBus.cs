@@ -36,10 +36,11 @@ namespace EventDriven.EventBus.Dapr
         public override async Task PublishAsync<TIntegrationEvent>(
             TIntegrationEvent @event,
             string topic = null,
-            string prefix = null)
+            string prefix = null, 
+            string suffix = null)
         {
             if (@event is null) throw new ArgumentNullException(nameof(@event));
-            var topicName = GetTopicName(@event.GetType(), topic, prefix);
+            var topicName = GetTopicName(@event.GetType(), topic, prefix, suffix);
             await DaprClient.PublishEventAsync(DaprEventBusOptions.Value.PubSubName, topicName, @event);
         }
     }
