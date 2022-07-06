@@ -1,28 +1,23 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Dapr.Client;
 using EventDriven.EventBus.Abstractions;
 using Microsoft.Extensions.Options;
 using NeoSmart.AsyncLock;
 
-namespace EventDriven.EventBus.Dapr;
+namespace EventDriven.EventBus.Dapr.EventCache.Mongo;
 
 /// <inheritdoc />
-public class DaprEventCache : IDaprEventCache
+public class DaprEventCache : IEventCache
 {
     private readonly DaprClient _dapr;
     private readonly AsyncLock _syncRoot = new();
+    private readonly DaprEventCacheOptions _eventCacheOptions;
     private readonly IEventHandlingRepository<DaprIntegrationEvent> _eventHandlingRepository;
-
+    
     /// <summary>
     /// Cleanup timer.
     /// </summary>
-    protected Timer CleanupTimer { get; }
+    protected Timer? CleanupTimer { get; }
 
-    /// <inheritdoc />
-    public DaprEventCacheOptions DaprEventCacheOptions { get; set; }
-    
     /// <summary>
     /// Cancellation token.
     /// </summary>
@@ -43,13 +38,13 @@ public class DaprEventCache : IDaprEventCache
     {
         _dapr = dapr;
         _eventHandlingRepository = eventHandlingRepository;
-        DaprEventCacheOptions = eventCacheOptions.Value;
+        _eventCacheOptions = eventCacheOptions.Value;
         CancellationToken = cancellationToken;
         async void TimerCallback(object state) => await CleanupEventCacheAsync();
-        if (DaprEventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
-            DaprEventCacheOptions.EnableEventCacheCleanup)
-            CleanupTimer = new Timer(TimerCallback, null, TimeSpan.Zero, 
-                DaprEventCacheOptions.EventCacheCleanupInterval);
+        if (_eventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
+            _eventCacheOptions.EnableEventCacheCleanup)
+            CleanupTimer = new Timer(TimerCallback!, null, TimeSpan.Zero, 
+                _eventCacheOptions.EventCacheCleanupInterval);
     }
 
     /// <summary>
@@ -61,11 +56,11 @@ public class DaprEventCache : IDaprEventCache
         using (await _syncRoot.LockAsync())
         {
             // End timer and exit if cache cleanup disabled or cancellation pending
-            if (!(DaprEventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
-                  DaprEventCacheOptions.EnableEventCacheCleanup)
+            if (!(_eventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
+                  _eventCacheOptions.EnableEventCacheCleanup)
                 || CancellationToken.IsCancellationRequested)
             {
-                await CleanupTimer.DisposeAsync();
+                if (CleanupTimer != null) await CleanupTimer.DisposeAsync();
                 return;
             }
             
@@ -74,41 +69,45 @@ public class DaprEventCache : IDaprEventCache
             foreach (var @event in events)
             {
                 if (@event.Value != null)
-                    await _dapr.DeleteStateAsync(DaprEventCacheOptions.DaprStateStoreOptions.StateStoreName,
+                    await _dapr.DeleteStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
                         @event.Value.EventId, null, null, CancellationToken);
             }
         }
     }
 
     /// <inheritdoc />
-    public virtual async Task<bool> TryAddAsync(IntegrationEvent @event)
+    public bool TryAdd(IntegrationEvent? @event) =>
+        TryAddAsync(@event).Result;
+
+    /// <inheritdoc />
+    public virtual async Task<bool> TryAddAsync(IntegrationEvent? @event)
     {
         using (await _syncRoot.LockAsync())
         {
             // Return true if not enabled
-            if (!DaprEventCacheOptions.EnableEventCache) return true;
+            if (!_eventCacheOptions.EnableEventCache) return true;
         
             // Return false if event exists and is not expired
-            var existing = await _dapr.GetStateAsync<EventHandling>(DaprEventCacheOptions
-                .DaprStateStoreOptions.StateStoreName, @event.Id, null, null, CancellationToken);
+            var existing = await _dapr.GetStateAsync<EventHandling>(_eventCacheOptions
+                .DaprStateStoreOptions.StateStoreName, @event?.Id, null, null, CancellationToken);
             if (existing != null && existing.EventHandledTimeout < DateTime.UtcNow - existing.EventHandledTime)
                 return false;
         
             // Remove existing if event is expired
             if (existing != null)
-                await _dapr.DeleteStateAsync(DaprEventCacheOptions
-                    .DaprStateStoreOptions.StateStoreName, @event.Id, null, null, CancellationToken);
+                await _dapr.DeleteStateAsync(_eventCacheOptions
+                    .DaprStateStoreOptions.StateStoreName, @event?.Id, null, null, CancellationToken);
             
             // Add event handling
             var handling = new EventHandling
             {
-                EventId = @event.Id,
-                IntegrationEvent = @event,
+                EventId = @event?.Id!,
+                IntegrationEvent = @event!,
                 EventHandledTime = DateTime.UtcNow,
-                EventHandledTimeout = DaprEventCacheOptions.EventCacheTimeout
+                EventHandledTimeout = _eventCacheOptions.EventCacheTimeout
             };
-            await _dapr.SaveStateAsync(DaprEventCacheOptions.DaprStateStoreOptions.StateStoreName,
-                @event.Id, handling, null, null, CancellationToken);
+            await _dapr.SaveStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
+                @event?.Id, handling, null, null, CancellationToken);
             return true;
         }
     }

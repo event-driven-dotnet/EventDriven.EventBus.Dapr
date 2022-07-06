@@ -1,4 +1,4 @@
-namespace EventDriven.EventBus.Dapr;
+namespace EventDriven.EventBus.Dapr.EventCache.Mongo;
 
 /// <summary>
 /// Dapr event cache type.

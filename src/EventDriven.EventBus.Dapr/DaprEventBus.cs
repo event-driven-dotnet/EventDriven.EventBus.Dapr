@@ -35,9 +35,9 @@ namespace EventDriven.EventBus.Dapr
         ///<inheritdoc/>
         public override async Task PublishAsync<TIntegrationEvent>(
             TIntegrationEvent @event,
-            string topic = null,
-            string prefix = null, 
-            string suffix = null)
+            string? topic = null,
+            string? prefix = null, 
+            string? suffix = null)
         {
             if (@event is null) throw new ArgumentNullException(nameof(@event));
             var topicName = GetTopicName(@event.GetType(), topic, prefix, suffix);

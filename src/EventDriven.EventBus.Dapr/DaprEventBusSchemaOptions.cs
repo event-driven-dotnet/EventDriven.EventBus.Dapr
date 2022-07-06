@@ -25,7 +25,7 @@ namespace EventDriven.EventBus.Dapr
         /// <summary>
         /// Mongo state store options.
         /// </summary>
-        public MongoStateStoreOptions MongoStateStoreOptions { get; set; }
+        public MongoStateStoreOptions MongoStateStoreOptions { get; set; } = null!;
 
         /// <summary>
         /// Add schema to registry on publish if not previously registered.

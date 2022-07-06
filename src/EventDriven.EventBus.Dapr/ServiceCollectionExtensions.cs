@@ -32,20 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new Exception($"Configuration section '{nameof(DaprEventBusOptions)}' not present in app settings.");
             services.Configure<DaprEventBusOptions>(daprOptionsConfigSection);
 
-            var daprEventCacheOptions = new DaprEventCacheOptions();
-            var daprEventCacheConfigSection = configuration.GetSection(nameof(DaprEventCacheOptions));
-            daprEventCacheConfigSection.Bind(daprEventCacheOptions);
-            if (!daprEventCacheConfigSection.Exists())
-                throw new Exception($"Configuration section '{nameof(DaprEventCacheOptions)}' not present in app settings.");
-            services.Configure<DaprEventCacheOptions>(daprEventCacheConfigSection);
-
-            if (daprEventCacheOptions.EnableEventCache)
-                services.AddSingleton<IDaprEventCache, DaprEventCache>();
-            if (!daprEventCacheOptions.EnableEventCacheCleanup)
-                services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>, 
-                    NullEventHandlingRepository<DaprIntegrationEvent>>();
-
-            Action<DaprEventBusSchemaOptions> configureSchemaOptions = null;
+            Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null;
             if (useSchemaRegistry)
             {
                 services.AddSingleton<IEventBus, DaprEventBusWithSchemaRegistry>();
@@ -78,11 +65,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="T:IServiceCollection" /></param>
         /// <param name="pubSubName">The name of the pub sub component to use.</param>
         /// <param name="configureSchemaOptions">Configure schema registry options.</param>
-        /// <param name="configureEventCacheOptions">Configure event cache options.</param>
         /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
         public static IServiceCollection AddDaprEventBus(this IServiceCollection services, string pubSubName,
-            Action<DaprEventBusSchemaOptions> configureSchemaOptions = null,
-            Action<DaprEventCacheOptions> configureEventCacheOptions = null)
+            Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null)
         {
             services.AddDaprClient();
             if (configureSchemaOptions != null)
@@ -91,26 +76,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IEventBus, DaprEventBus>();
             services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName );
 
-            var daprEventCacheOptions = new DaprEventCacheOptions();
-            if (configureEventCacheOptions == null)
-                services.Configure<DaprEventCacheOptions>(options => 
-                    options.EnableEventCacheCleanup = daprEventCacheOptions.EnableEventCacheCleanup);
-            else
-            {
-                configureEventCacheOptions(daprEventCacheOptions);
-                services.Configure(configureEventCacheOptions);
-            }
-
-            if (!daprEventCacheOptions.EnableEventCacheCleanup)
-                services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
-                    NullEventHandlingRepository<DaprIntegrationEvent>>();
-
-            services.AddSingleton<IDaprEventCache, DaprEventCache>();
             return services.AddDaprEventBusSchema(configureSchemaOptions);
         }
 
         private static IServiceCollection AddDaprEventBusSchema(this IServiceCollection services,
-            Action<DaprEventBusSchemaOptions> configureSchemaOptions = null)
+            Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null)
         {
             if (configureSchemaOptions == null) return services;
             var schemaOptions = new DaprEventBusSchemaOptions

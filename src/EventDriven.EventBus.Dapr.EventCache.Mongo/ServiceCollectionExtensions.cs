@@ -2,7 +2,6 @@
 
 using EventDriven.DependencyInjection.URF.Mongo;
 using EventDriven.EventBus.Abstractions;
-using EventDriven.EventBus.Dapr;
 using EventDriven.EventBus.Dapr.EventCache.Mongo;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
@@ -46,7 +45,7 @@ public static class ServiceCollectionExtensions
             options.EventCacheCleanupInterval = daprEventCacheOptions.EventCacheCleanupInterval;
         });
 
-        services.AddSingleton<IDaprEventCache, DaprEventCache>();
+        services.AddSingleton<IEventCache, DaprEventCache>();
         services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
             MongoEventHandlingRepository<DaprIntegrationEvent>>();
         services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
@@ -85,7 +84,7 @@ public static class ServiceCollectionExtensions
             options.EventCacheCleanupInterval = daprEventCacheOptions.EventCacheCleanupInterval;
         });
 
-        services.AddSingleton<IDaprEventCache, DaprEventCache>();
+        services.AddSingleton<IEventCache, DaprEventCache>();
         services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
             MongoEventHandlingRepository<DaprIntegrationEvent>>();
         services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();

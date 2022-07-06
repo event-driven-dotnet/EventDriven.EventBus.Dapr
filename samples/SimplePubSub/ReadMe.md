@@ -25,7 +25,7 @@ Demonstrates how to use Dapr Event Bus for simple pub/sub.
     dapr run --app-id publisher --components-path ../dapr/components -- dotnet run
     ```
 
-3. Open a browser at http://localhost:5151/weatherforecast
+3. Open a browser at http://localhost:5252/weatherforecast
    - Refresh the page every few seconds to see a new set of values.
    - Note log output to each terminal.
 
