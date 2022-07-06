@@ -17,11 +17,12 @@
     <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.2.0</PackageReleaseNotes>
     <PackageId>EventDriven.EventBus.Dapr</PackageId>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapr.AspNetCore" Version="1.6.0" />
-      <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.2.0" />
+    <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.2.1" />
     <PackageReference Include="EventDriven.SchemaRegistry.Mongo" Version="1.2.0" />
     <PackageReference Include="EventDriven.SchemaValidator.Json" Version="1.1.0" />
     <PackageReference Include="NeoSmart.AsyncLock" Version="3.2.1" />
