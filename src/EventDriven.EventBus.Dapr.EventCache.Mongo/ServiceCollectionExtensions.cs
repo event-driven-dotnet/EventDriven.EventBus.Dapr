@@ -1,8 +1,7 @@
-// ReSharper disable once CheckNamespace
-
 using EventDriven.DependencyInjection.URF.Mongo;
 using EventDriven.EventBus.Abstractions;
 using EventDriven.EventBus.Dapr.EventCache.Mongo;
+using EventDriven.EventBus.EventCache.Mongo;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using URF.Core.Abstractions;

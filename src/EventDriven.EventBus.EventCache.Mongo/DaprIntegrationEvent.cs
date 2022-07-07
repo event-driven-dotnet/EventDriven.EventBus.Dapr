@@ -1,6 +1,6 @@
 using EventDriven.EventBus.Abstractions;
 
-namespace EventDriven.EventBus.Dapr.EventCache.Mongo;
+namespace EventDriven.EventBus.EventCache.Mongo;
 
 /// <summary>
 /// Dapr integration event.

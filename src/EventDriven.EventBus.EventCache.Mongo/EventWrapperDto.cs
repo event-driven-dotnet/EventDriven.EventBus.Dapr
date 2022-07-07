@@ -1,6 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace EventDriven.EventBus.Dapr.EventCache.Mongo;
+namespace EventDriven.EventBus.EventCache.Mongo;
 
 /// <summary>
 /// Event wrapper DTO.

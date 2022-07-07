@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.3.0" />
+    <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.3.1" />
   </ItemGroup>
 
 </Project>

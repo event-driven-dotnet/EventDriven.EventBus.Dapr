@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\EventDriven.EventBus.Dapr.EventCache.Mongo\EventDriven.EventBus.Dapr.EventCache.Mongo.csproj" />
+    <ProjectReference Include="..\..\..\src\EventDriven.EventBus.EventCache.Mongo\EventDriven.EventBus.EventCache.Mongo.csproj" />
     <ProjectReference Include="..\..\..\src\EventDriven.EventBus.Dapr\EventDriven.EventBus.Dapr.csproj" />
   </ItemGroup>
 

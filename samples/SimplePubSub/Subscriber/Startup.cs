@@ -1,5 +1,4 @@
 using EventDriven.EventBus.Dapr;
-using EventDriven.EventBus.Dapr.EventCache.Mongo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,22 +38,12 @@ namespace Subscriber
             // Configuration
             var eventBusOptions = new DaprEventBusOptions();
             Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
-            var eventCacheOptions = new DaprEventCacheOptions();
-            Configuration.GetSection(nameof(DaprEventCacheOptions)).Bind(eventCacheOptions);
-            var daprStoreDatabaseSettings = new DaprStoreDatabaseSettings();
-            Configuration.GetSection(nameof(DaprStoreDatabaseSettings)).Bind(daprStoreDatabaseSettings);
 
-            // Add Dapr service bus
+            // Add Dapr event bus
             services.AddDaprEventBus(eventBusOptions.PubSubName);
             
-            // Add Dapr Mongo event cache
-            services.AddDaprMongoEventCache(eventCacheOptions.DaprStateStoreOptions
-                .StateStoreName, options =>
-            {
-                options.ConnectionString = daprStoreDatabaseSettings.ConnectionString;
-                options.DatabaseName = daprStoreDatabaseSettings.DatabaseName;
-                options.CollectionName = daprStoreDatabaseSettings.CollectionName;
-            });
+            // Add Mongo event cache
+            services.AddMongoEventCache(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
