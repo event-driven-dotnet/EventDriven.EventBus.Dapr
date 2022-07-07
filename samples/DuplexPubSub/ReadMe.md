@@ -70,11 +70,11 @@ The WeatherGenerator subscribes to the `WeatherForecastRequestedEvent`, creates 
    - Browse to http://localhost:8080/
    - Verify that **frontend**, **backend** and **weather-generator** apps are running.
 5. Test with the Backend app.
-   - Browse to http://localhost:5000/weatherforecast
+   - Browse to http://localhost:5221/weatherforecast
    - Refresh the browser to initiate requests.
    - There should be a 5 second latency before results are returned.
 6. Test with the Frontend app.
-   - Browse to http://localhost:5200/
+   - Browse to http://localhost:5121/
    - Click the "Get Weather Forecasts" button.
 
 ## Debugging with Visual Studio Code

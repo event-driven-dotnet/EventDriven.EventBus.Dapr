@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="configure">Used to subscribe to events with event handlers.</param>
         /// <returns>An <see cref="DaprEventBusEndpointConventionBuilder"/> for endpoints associated with DaprEventBus subscriptions.</returns>
         public static DaprEventBusEndpointConventionBuilder MapDaprEventBus(this IEndpointRouteBuilder endpoints,
-            Action<IEventBus> configure = null)
+            Action<IEventBus?>? configure = null)
         {
             if (endpoints is null)
                 throw new ArgumentNullException(nameof(endpoints));
@@ -36,15 +36,15 @@ namespace Microsoft.AspNetCore.Builder
             var logger = endpoints.ServiceProvider.GetService<ILogger<DaprEventBus>>();
             var eventBus = endpoints.ServiceProvider.GetService<IEventBus>();
             var daprClient = endpoints.ServiceProvider.GetService<DaprClient>();
-            var daprEventCache = endpoints.ServiceProvider.GetService<IDaprEventCache>();
+            var daprEventCache = endpoints.ServiceProvider.GetService<IEventCache>();
             var daprEventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
-            var daprEventCacheOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventCacheOptions>>();
+            var eventCacheOptions = endpoints.ServiceProvider.GetService<IOptions<EventCacheOptions>>();
 
             // Configure event bus
             logger?.LogInformation("Configuring event bus ...");
             configure?.Invoke(eventBus);
 
-            IEndpointConventionBuilder builder = null;
+            IEndpointConventionBuilder? builder = null;
             if (eventBus?.Topics != null)
             {
                 foreach (var topic in eventBus.Topics)
@@ -58,37 +58,26 @@ namespace Microsoft.AspNetCore.Builder
                 {
                     // Get handlers
                     var handlers = GetHandlersForRequest(context.Request.Path);
-                    if (handlers == null) return;
-                    logger?.LogInformation("Request handlers count: {HandlersCount}", handlers.Count);
-                    var handler1 = handlers.FirstOrDefault();
+                    logger?.LogInformation("Request handlers count: {HandlersCount}", handlers!.Count);
+                    var handler1 = handlers!.FirstOrDefault();
                     if (handler1 == null) return;
 
                     // Get event type
                     var eventType = GetEventType(handler1);
-                    if (eventType == null)
-                    {
-                        SetErrorStatus(context);
-                        return;
-                    }
 
                     // Get event
                     var @event = await GetEventFromRequestAsync(context, eventType, daprClient?.JsonSerializerOptions);
-                    if (@event == null)
-                    {
-                        SetErrorStatus(context);
-                        return;
-                    }
 
                     // Process handlers
                     var errorOccurred = false;
-                    foreach (var handler in handlers)
+                    foreach (var handler in handlers!)
                     {
-                        logger?.LogInformation("Handling event: {EventId}", @event.Id);
+                        logger?.LogInformation("Handling event: {EventId}", @event?.Id);
                         try
                         {
-                            if (daprEventCacheOptions?.Value.EnableEventCache == false
-                                || daprEventCache != null && await daprEventCache.TryAddAsync(@event))
-                                await handler.HandleAsync(@event);
+                            if (eventCacheOptions?.Value.EnableEventCache == false
+                                || daprEventCache != null && await daprEventCache.TryAddAsync(@event!))
+                                await handler.HandleAsync(@event!);
                         }
                         catch (Exception e)
                         {
@@ -107,7 +96,7 @@ namespace Microsoft.AspNetCore.Builder
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
             }
 
-            List<IIntegrationEventHandler> GetHandlersForRequest(string path)
+            List<IIntegrationEventHandler>? GetHandlersForRequest(string path)
             {
                 var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
                 logger?.LogInformation("Topic for request: {Topic}", topic);
@@ -117,7 +106,7 @@ namespace Microsoft.AspNetCore.Builder
                 return null;
             }
 
-            Type GetEventType(IIntegrationEventHandler handler)
+            Type? GetEventType(IIntegrationEventHandler handler)
             {
                 var eventType = handler.GetType().BaseType?.GenericTypeArguments[0];
                 if (eventType != null) return eventType;
@@ -125,8 +114,8 @@ namespace Microsoft.AspNetCore.Builder
                 return null;
             }
 
-            async Task<IntegrationEvent> GetEventFromRequestAsync(HttpContext context, 
-                Type eventType, JsonSerializerOptions serializerOptions)
+            async Task<IntegrationEvent?> GetEventFromRequestAsync(HttpContext context, 
+                Type? eventType, JsonSerializerOptions? serializerOptions)
             {
                 // Check content type
                 if (!string.Equals(context.Request.ContentType, MediaTypeNames.Application.Json,
@@ -140,8 +129,8 @@ namespace Microsoft.AspNetCore.Builder
                 // Get event
                 try
                 {
-                    var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType, serializerOptions);
-                    return (IntegrationEvent)value;
+                    var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType!, serializerOptions);
+                    return (IntegrationEvent)value!;
                 }
                 catch (Exception e) when (e is JsonException || e is ArgumentNullException || e is NotSupportedException)
                 {
@@ -151,7 +140,7 @@ namespace Microsoft.AspNetCore.Builder
                 }
             }
 
-            return new DaprEventBusEndpointConventionBuilder(builder);
+            return new DaprEventBusEndpointConventionBuilder(builder!);
         }
     }
 }
