@@ -76,7 +76,9 @@ public static class ServiceCollectionExtensions
             options.EnableEventCacheCleanup = eventCacheOptions.EnableEventCacheCleanup;
             options.EventCacheCleanupInterval = eventCacheOptions.EventCacheCleanupInterval;
         });
+        services.AddSingleton<EventCacheOptions>(eventCacheOptions);
 
+        if (!eventCacheOptions.EnableEventCache) return services;
         services.AddSingleton<IEventCache, MongoEventCache>();
         services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
             MongoEventHandlingRepository<DaprIntegrationEvent>>();

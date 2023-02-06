@@ -82,7 +82,9 @@ public static class ServiceCollectionExtensions
             options.EnableEventCacheCleanup = daprEventCacheOptions.EnableEventCacheCleanup;
             options.EventCacheCleanupInterval = daprEventCacheOptions.EventCacheCleanupInterval;
         });
+        services.AddSingleton<EventCacheOptions>(daprEventCacheOptions);
 
+        if (!daprEventCacheOptions.EnableEventCache) return services;
         services.AddSingleton<IEventCache, DaprEventCache>();
         services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
             MongoEventHandlingRepository<DaprIntegrationEvent>>();

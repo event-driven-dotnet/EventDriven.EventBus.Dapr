@@ -70,13 +70,25 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null)
         {
             services.AddDaprClient();
-            if (configureSchemaOptions != null)
-                services.AddSingleton<IEventBus, DaprEventBusWithSchemaRegistry>();
-            else
+            if (configureSchemaOptions == null)
                 services.AddSingleton<IEventBus, DaprEventBus>();
-            services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName );
-
-            return services.AddDaprEventBusSchema(configureSchemaOptions);
+            else
+            {
+                var schemaOptions = new DaprEventBusSchemaOptions
+                {
+                    UseSchemaRegistry = false,
+                    MongoStateStoreOptions = new MongoStateStoreOptions()
+                };
+                configureSchemaOptions(schemaOptions);
+                if (!schemaOptions.UseSchemaRegistry)
+                    services.AddSingleton<IEventBus, DaprEventBus>();
+                else
+                {
+                    services.AddSingleton<IEventBus, DaprEventBusWithSchemaRegistry>();
+                    services.AddDaprEventBusSchema(configureSchemaOptions);
+                }
+            }
+            return services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName);
         }
 
         private static IServiceCollection AddDaprEventBusSchema(this IServiceCollection services,
@@ -91,6 +103,7 @@ namespace Microsoft.Extensions.DependencyInjection
             configureSchemaOptions(schemaOptions);
             services.Configure(configureSchemaOptions);
 
+            if (!schemaOptions.UseSchemaRegistry) return services;
             if (schemaOptions.SchemaValidatorType == SchemaValidatorType.Json)
             {
                 services.AddSingleton<ISchemaGenerator, JsonSchemaGenerator>();
