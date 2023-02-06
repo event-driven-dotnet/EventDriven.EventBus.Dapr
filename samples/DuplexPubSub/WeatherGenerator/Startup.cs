@@ -26,7 +26,7 @@ namespace WeatherGenerator
             services.AddSingleton<WeatherForecastRequestedEventHandler>();
 
             // Add Dapr service bus
-            services.AddDaprEventBus(Configuration, true);
+            services.AddDaprEventBus(Configuration);
             
             // Add Dapr Mongo event cache
             services.AddDaprMongoEventCache(Configuration);

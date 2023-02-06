@@ -6,8 +6,7 @@ Demonstrates how to use Dapr Event Bus for duplex pub/sub.
 - Install [Docker Desktop](https://www.docker.com/products/docker-desktop) running Linux containers.
 - Install [Dapr CLI](https://docs.dapr.io/getting-started/install-dapr-cli/).
 - Run `dapr init`, `dapr --version`, `docker ps`
-- Run `dapr dashboard` from a terminal, then browse to http://localhost:8080.
-- [Dapr Visual Studio Extension](https://github.com/microsoft/vscode-dapr) (for debugging).
+- [Microsoft Tye](https://github.com/dotnet/tye/blob/main/docs/getting_started.md) (recommended)
 
 ## Introduction
 
@@ -45,48 +44,39 @@ The WeatherGenerator subscribes to the `WeatherForecastRequestedEvent`, creates 
 
 ## Running the Sample
 
-1. Open a terminal at the **Frontend** project root.
-   - Run the following Dapr command to start the frontend.
+1. Open a terminal at the **samples/DuplexPubSub** project root.
+   - Run the following command to start the frontend, weather-generator and backend projects using Tye.
 
     ```
-    dapr run --app-id frontend --app-port 5121 -- dotnet run
+    tye run
     ```
 
-2. Open a terminal at the **WeatherGenerator** project root.
-   - Run the following Dapr command to start the weather-generator.
-
-    ```
-    dapr run --app-id weather-generator --app-port 5321 --components-path ../dapr/components -- dotnet run
-    ```
-
-3. Open a terminal at the **Backend** project root.
-   - Run the following Dapr command to start the backend.
-
-    ```
-    dapr run --app-id backend --app-port 5221 --components-path ../dapr/components -- dotnet run
-    ```
-
-4. Open a terminal and run `dapr dashboard`.
-   - Browse to http://localhost:8080/
+2. Open the Tye dashboard.
+   - Browse to http://localhost:8000/
    - Verify that **frontend**, **backend** and **weather-generator** apps are running.
-5. Test with the Backend app.
+3. Test with the Backend app.
    - Browse to http://localhost:5221/weatherforecast
    - Refresh the browser to initiate requests.
    - There should be a 5 second latency before results are returned.
-6. Test with the Frontend app.
+4. Test with the Frontend app.
    - Browse to http://localhost:5121/
    - Click the "Get Weather Forecasts" button.
 
-## Debugging with Visual Studio Code
+## Debugging with Tye and the IDE of your choice
 
-1. Open the publisher and subscriber in separate VS Code instances.
+1. Open the weather-generator and backend projects in your IDE.
    - Set breakpoints where you want to pause code execution.
-2. Press Ctrl+P, enter `Dapr` and select `Scaffold Dapr Tasks`.
-   - Select .NET Core Attach
-   - Enter the app id (frontend, backend, weather-generator).
-   - Enter the port number.
-3. On the VS Code Debug tab select the `.NET Core Attach with Dapr` option.
-   - Start debugging the subscriber first by  clicking the Run button or pressing F5.
-   - Select the app process (Frontend.exe, Backend.exe, WeatherGenerator.exe).
-4. Browse to http://localhost:5200/
+2. Attach to the WeatherGenerator or Backend processes.
+3. Browse to http://localhost:5200/
    - Click the "Get Weather Forecasts" button.
+
+> If you need to debug startup code, start Tye with the `debug` flag.
+> Specify * for debugging all projects, or specify a project name.
+> Code execution will begin when you attach to the process.
+
+```
+tye run --debug *
+```
+```
+tye run --debug Backend
+```
