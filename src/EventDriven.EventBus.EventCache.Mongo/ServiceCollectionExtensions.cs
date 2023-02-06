@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
         mongoOptionsConfigSection.Bind(eventCacheOptions);
         if (!mongoOptionsConfigSection.Exists())
             throw new Exception($"Configuration section '{nameof(MongoEventCacheOptions)}' not present in app settings.");
-        if (string.IsNullOrWhiteSpace(eventCacheOptions.AppName))
+        if (eventCacheOptions.EnableEventCache && string.IsNullOrWhiteSpace(eventCacheOptions.AppName))
             throw new Exception($"Configuration section 'MongoEventCacheOptions:AppName' must be specified.");
 
         services.Configure<MongoEventCacheOptions>(options =>
@@ -42,7 +42,9 @@ public static class ServiceCollectionExtensions
             options.EnableEventCacheCleanup = eventCacheOptions.EnableEventCacheCleanup;
             options.EventCacheCleanupInterval = eventCacheOptions.EventCacheCleanupInterval;
         });
+        services.AddSingleton<EventCacheOptions>(eventCacheOptions);
 
+        if (!eventCacheOptions.EnableEventCache) return services;
         services.AddSingleton<IEventCache, MongoEventCache>();
         services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
             MongoEventHandlingRepository<DaprIntegrationEvent>>();

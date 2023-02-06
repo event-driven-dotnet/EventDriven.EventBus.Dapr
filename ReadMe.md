@@ -60,7 +60,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     public void ConfigureServices(IServiceCollection services)
     {
         // Add Dapr Event Bus
-        services.AddDaprEventBus(Configuration, true);
+        services.AddDaprEventBus(Configuration);
 
         // Add Dapr Mongo event cache
         services.AddDaprMongoEventCache(Configuration);
@@ -156,6 +156,23 @@ The Schema Registry only validates messages when they are published to the Event
 > **Note**: **EventDriven.SchemaValidator.Json** uses `JSchemaGenerator` from [Newtonsoft.Json.Schema.Generation](https://www.newtonsoft.com/jsonschema/help/html/GeneratingSchemas.htm), which makes all fields *required* by default. To make fields optional, you need to use [EventDriven.SchemaRegistry.Api](https://github.com/event-driven-dotnet/EventDriven.SchemaRegistry.Api) to update the schema by removing required fields.
 
 To view all the registered schemas you can connect to the schema datastore directly, for example, using a MongoDB client such as [Robot 3T](https://robomongo.org/).
+
+## Disabling Schema Registry
+
+> It is recommended you **enable** schema registry to so that subscribers may be protected from breakage should a publisher change an event schema in a way that is not backwards compatible.
+>
+> However, if you wish to disable schema registry in a publisher, you may do so as follows.
+
+- Update the `DaprEventBusSchemaOptions` section in your appsettings.json file by setting `UseSchemaRegistry` to `false`.
+- Or simply remove the `DaprEventBusSchemaOptions` section altogether.
+
+## Disabling Event Cache
+
+> It is recommended you keep event cache **enabled** to make your subscriber idempotent and filter out duplicate events. This is the default behavior.
+>
+> However, if you wish to disable event cache in a subscriber, you may do so as follows.
+
+- Add a `MongoEventCacheOptions` section in your appsettings.json file and set `EnableEventCache` to `false`.
 
 ## Samples
 
