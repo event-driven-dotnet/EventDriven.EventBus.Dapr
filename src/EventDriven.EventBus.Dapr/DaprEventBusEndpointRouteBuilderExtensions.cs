@@ -38,7 +38,7 @@ namespace Microsoft.AspNetCore.Builder
             var daprClient = endpoints.ServiceProvider.GetService<DaprClient>();
             var daprEventCache = endpoints.ServiceProvider.GetService<IEventCache>();
             var daprEventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
-            var eventCacheOptions = endpoints.ServiceProvider.GetService<IOptions<EventCacheOptions>>();
+            var eventCacheOptions = endpoints.ServiceProvider.GetService<EventCacheOptions>();
 
             // Configure event bus
             logger?.LogInformation("Configuring event bus ...");
@@ -75,7 +75,7 @@ namespace Microsoft.AspNetCore.Builder
                         logger?.LogInformation("Handling event: {EventId}", @event?.Id);
                         try
                         {
-                            if (eventCacheOptions?.Value.EnableEventCache == false
+                            if (eventCacheOptions?.EnableEventCache == false
                                 || daprEventCache != null && await daprEventCache.TryAddAsync(@event!))
                                 await handler.HandleAsync(@event!);
                         }
