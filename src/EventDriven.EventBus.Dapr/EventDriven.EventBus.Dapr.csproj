@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>event-bus event-driven event-driven-architecture dapr</PackageTags>
-    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.3.3</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.3.4</PackageReleaseNotes>
     <PackageId>EventDriven.EventBus.Dapr</PackageId>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<Nullable>enable</Nullable>
