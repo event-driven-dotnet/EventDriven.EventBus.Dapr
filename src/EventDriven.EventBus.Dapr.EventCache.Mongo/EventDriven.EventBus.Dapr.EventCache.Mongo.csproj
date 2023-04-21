@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>1.3.5</Version>
+        <Version>1.3.6</Version>
         <Authors>Tony Sneed</Authors>
         <Description>A MongoDB implementation of event caching with Dapr state store.</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -14,7 +14,7 @@
         <RepositoryUrl>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>event-bus event-cache event-driven event-driven-architecture dapr</PackageTags>
-        <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.3.5</PackageReleaseNotes>
+        <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.3.6</PackageReleaseNotes>
         <PackageId>EventDriven.EventBus.Dapr.EventCache.Mongo</PackageId>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
