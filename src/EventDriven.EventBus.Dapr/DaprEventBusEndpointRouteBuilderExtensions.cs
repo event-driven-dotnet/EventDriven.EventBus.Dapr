@@ -38,7 +38,6 @@ namespace Microsoft.AspNetCore.Builder
             var daprClient = endpoints.ServiceProvider.GetService<DaprClient>();
             var daprEventCache = endpoints.ServiceProvider.GetService<IEventCache>();
             var daprEventBusOptions = endpoints.ServiceProvider.GetService<IOptions<DaprEventBusOptions>>();
-            var eventCacheOptions = endpoints.ServiceProvider.GetService<EventCacheOptions>();
 
             // Configure event bus
             logger?.LogInformation("Configuring event bus ...");
@@ -73,37 +72,52 @@ namespace Microsoft.AspNetCore.Builder
                     foreach (var handler in handlers!)
                     {
                         logger?.LogInformation("Handling event: {EventId}", @event?.Id);
+
+                        // See if event has been handled by this handler
+                        string? errorMessage = null;
+                        var hasBeenHandled = false;
+                        if (daprEventCache != null)
+                            hasBeenHandled = await daprEventCache.HasBeenHandledAsync(@event!, handler.GetType().Name);
+                        
                         try
                         {
-                            if (eventCacheOptions?.EnableEventCache == false
-                                || daprEventCache != null && await daprEventCache.TryAddAsync(@event!))
+                            // Handle the event
+                            if (!hasBeenHandled)
                                 await handler.HandleAsync(@event!);
                         }
                         catch (Exception e)
                         {
                             logger?.LogInformation("Handler threw exception: {Message}", e);
                             errorOccurred = true;
+                            errorMessage = e.Message;
                         }
+
+                        // Add event to cache
+                        if (daprEventCache != null)
+                            await daprEventCache.AddEventAsync(@event!, handler.GetType().Name, errorMessage);
                     }
                     
-                    // If any handler has thrown an exception, return 404 so Dapr can log an error and drop message.
+                    // If any handler has thrown an exception, return 500 so Dapr can retry sending the message.
                     if (errorOccurred) SetErrorStatus(context);
                 }
             }
 
             void SetErrorStatus(HttpContext context)
             {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                // Set status code to 500 if retries have not been disabled
+                var statusCode = StatusCodes.Status500InternalServerError;
+
+                // Set status code to 400 if retries have been disabled
+                if (daprEventBusOptions is { Value.DisableRetries: true })
+                    statusCode = StatusCodes.Status404NotFound;
+                context.Response.StatusCode = statusCode;
             }
 
             List<IIntegrationEventHandler>? GetHandlersForRequest(string path)
             {
                 var topic = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
                 logger?.LogInformation("Topic for request: {Topic}", topic);
-
-                if (eventBus.Topics.TryGetValue(topic, out var handlers))
-                    return handlers;
-                return null;
+                return eventBus.Topics.TryGetValue(topic, out var handlers) ? handlers : null;
             }
 
             Type? GetEventType(IIntegrationEventHandler handler)
@@ -126,9 +140,9 @@ namespace Microsoft.AspNetCore.Builder
                     return null;
                 }
                 
-                // Get event
                 try
                 {
+                    // Get event
                     var value = await JsonSerializer.DeserializeAsync(context.Request.Body, eventType!, serializerOptions);
                     return (IntegrationEvent)value!;
                 }

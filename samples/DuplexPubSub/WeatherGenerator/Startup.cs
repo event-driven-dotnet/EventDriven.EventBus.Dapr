@@ -28,8 +28,8 @@ namespace WeatherGenerator
             // Add Dapr service bus
             services.AddDaprEventBus(Configuration);
             
-            // Add Dapr Mongo event cache
-            services.AddDaprMongoEventCache(Configuration);
+            // Add Mongo event cache
+            services.AddMongoEventCache(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

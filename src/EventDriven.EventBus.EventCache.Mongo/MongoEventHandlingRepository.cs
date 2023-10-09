@@ -59,7 +59,7 @@ public class MongoEventHandlingRepository<TIntegrationEvent> :
 
     /// <inheritdoc />
     public async Task<IEnumerable<EventWrapper<TIntegrationEvent>>> GetExpiredEventsAsync(
-        string? appName = null, CancellationToken cancellationToken = default)
+        string? appName = null, bool excludeErrors = true, CancellationToken cancellationToken = default)
     {
         var dtos = await Queryable()
             .ToListAsync(cancellationToken);
@@ -73,7 +73,8 @@ public class MongoEventHandlingRepository<TIntegrationEvent> :
                     Value = JsonSerializer.Deserialize<EventHandling<TIntegrationEvent>>(e.Value, options)
                 })
             .Where(e => appName == null || e.Id.StartsWith(appName)
-                && e.Value != null && e.Value.EventHandledTimeout < DateTime.UtcNow - e.Value.EventHandledTime)
+                && e.Value != null && DateTime.UtcNow > e.Value.EventHandledTime + e.Value.EventHandledTimeout
+                && e.Value.Handlers.Any(h => h.Value.HasError) == excludeErrors)
             .ToList();
         return expired;
     }

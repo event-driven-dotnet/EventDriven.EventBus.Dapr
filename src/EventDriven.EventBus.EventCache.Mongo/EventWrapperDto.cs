@@ -24,4 +24,10 @@ public class EventWrapperDto
     /// </summary>
     [BsonElement("value")]
     public string Value { get; set; } = null!;
+    
+    /// <summary>
+    /// Event wrapper ttl.
+    /// </summary>
+    [BsonElement("_ttl")]
+    public string Ttl { get; set; } = null!;
 }
