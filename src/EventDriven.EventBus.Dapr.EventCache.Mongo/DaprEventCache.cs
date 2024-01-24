@@ -1,8 +1,8 @@
+using AsyncKeyedLock;
 using Dapr.Client;
 using EventDriven.EventBus.Abstractions;
 using EventDriven.EventBus.EventCache.Mongo;
 using Microsoft.Extensions.Options;
-using NeoSmart.AsyncLock;
 
 namespace EventDriven.EventBus.Dapr.EventCache.Mongo;
 
@@ -10,7 +10,7 @@ namespace EventDriven.EventBus.Dapr.EventCache.Mongo;
 public class DaprEventCache : IEventCache
 {
     private readonly DaprClient _dapr;
-    private readonly AsyncLock _syncRoot = new();
+    private readonly AsyncNonKeyedLocker _syncRoot = new();
     private readonly DaprEventCacheOptions _eventCacheOptions;
     private readonly IEventHandlingRepository<DaprIntegrationEvent> _eventHandlingRepository;
     
