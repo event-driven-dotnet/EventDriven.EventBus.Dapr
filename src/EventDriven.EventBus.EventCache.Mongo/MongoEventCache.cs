@@ -1,13 +1,13 @@
+using AsyncKeyedLock;
 using EventDriven.EventBus.Abstractions;
 using Microsoft.Extensions.Options;
-using NeoSmart.AsyncLock;
 
 namespace EventDriven.EventBus.EventCache.Mongo;
 
 /// <inheritdoc />
 public class MongoEventCache : IEventCache
 {
-    private readonly AsyncLock _syncRoot = new();
+    private readonly AsyncNonKeyedLocker _syncRoot = new();
     private readonly MongoEventCacheOptions _eventCacheOptions;
     private readonly IEventHandlingRepository<DaprIntegrationEvent> _eventHandlingRepository;
 
