@@ -23,7 +23,7 @@ public class MongoEventHandlingRepository<TIntegrationEvent> :
 
     /// <inheritdoc />
     public async Task<EventWrapper<TIntegrationEvent>?> GetEventAsync(string appName, string eventId,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = default)
     {
         var dto = await FindOneAsync(e =>
             e.Id == $"{appName.ToLower()}||{eventId}", cancellationToken);
@@ -38,7 +38,7 @@ public class MongoEventHandlingRepository<TIntegrationEvent> :
     }
 
     /// <inheritdoc />
-    public async Task AddEventAsync(string appName, string eventId,
+    public async Task<EventWrapper<TIntegrationEvent>> AddEventAsync(string appName, string eventId,
         EventHandling eventHandling, CancellationToken cancellationToken = default)
     {
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
@@ -48,12 +48,63 @@ public class MongoEventHandlingRepository<TIntegrationEvent> :
             Etag = Guid.NewGuid().ToString(),
             Value = JsonSerializer.Serialize(eventHandling, options)
         };
-        await InsertOneAsync(@event, cancellationToken);
+        var dto = await InsertOneAsync(@event, cancellationToken);
+        return new EventWrapper<TIntegrationEvent>
+        {
+            Id = dto.Id,
+            Etag = dto.Etag,
+            Value = JsonSerializer.Deserialize<EventHandling<TIntegrationEvent>>(dto.Value, options)
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<EventWrapper<TIntegrationEvent>> UpdateEventAsync(string appName, string eventId, EventHandling eventHandling,
+        CancellationToken cancellationToken = default)
+    {
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var id = $"{appName.ToLower()}||{eventId}";
+        var @event = new EventWrapperDto
+        {
+            Id = id,
+            Etag = Guid.NewGuid().ToString(),
+            Value = JsonSerializer.Serialize(eventHandling, options)
+        };
+        var dto = await FindOneAndReplaceAsync(e => e.Id == id, @event, cancellationToken)
+            ?? await FindOneAsync(e => e.Id == id, cancellationToken);
+        return new EventWrapper<TIntegrationEvent>
+        {
+            Id = dto.Id,
+            Etag = dto.Etag,
+            Value = JsonSerializer.Deserialize<EventHandling<TIntegrationEvent>>(dto.Value, options)
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<EventWrapper<TIntegrationEvent>> AddOrUpdateEventAsync(string appName, string eventId, EventHandling eventHandling,
+        CancellationToken cancellationToken = new CancellationToken())
+    {
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var id = $"{appName.ToLower()}||{eventId}";
+        var @event = new EventWrapperDto
+        {
+            Id = id,
+            Etag = Guid.NewGuid().ToString(),
+            Value = JsonSerializer.Serialize(eventHandling, options)
+        };
+        var dto = await Collection.FindOneAndReplaceAsync<EventWrapperDto>(e => e.Id == id, @event,
+            new FindOneAndReplaceOptions<EventWrapperDto> { IsUpsert = true }, cancellationToken)
+                  ?? await FindOneAsync(e => e.Id == id, cancellationToken);
+        return new EventWrapper<TIntegrationEvent>
+        {
+            Id = dto.Id,
+            Etag = dto.Etag,
+            Value = JsonSerializer.Deserialize<EventHandling<TIntegrationEvent>>(dto.Value, options)
+        };
     }
 
     /// <inheritdoc />
     public async Task DeleteEventAsync(string appName, string eventId,
-        CancellationToken cancellationToken = new()) =>
+        CancellationToken cancellationToken = default) =>
         await DeleteOneAsync(e =>
             e.Id == $"{appName.ToLower()}||{eventId}", cancellationToken);
 

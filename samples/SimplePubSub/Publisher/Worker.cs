@@ -33,7 +33,7 @@ namespace Publisher
 
                 // Publish event
                 await _eventBus.PublishAsync(new WeatherForecastEvent(weathers), null, "v1");
-
+            
                 await Task.Delay(5000, stoppingToken);
             }
         }

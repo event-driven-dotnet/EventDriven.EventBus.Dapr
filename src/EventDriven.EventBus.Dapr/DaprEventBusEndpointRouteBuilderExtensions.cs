@@ -73,11 +73,11 @@ namespace Microsoft.AspNetCore.Builder
                     {
                         logger?.LogInformation("Handling event: {EventId}", @event?.Id);
 
-                        // See if event has been handled by this handler
+                        // See if event has been handled by this handler; if not, add event as started
                         string? errorMessage = null;
                         var hasBeenHandled = false;
                         if (daprEventCache != null)
-                            hasBeenHandled = await daprEventCache.HasBeenHandledAsync(@event!, handler.GetType().Name);
+                            hasBeenHandled = await daprEventCache.HasBeenHandledPersistEventAsync(@event!, handler.GetType().Name);
                         
                         try
                         {
@@ -93,8 +93,8 @@ namespace Microsoft.AspNetCore.Builder
                         }
 
                         // Add event to cache
-                        if (daprEventCache != null)
-                            await daprEventCache.AddEventAsync(@event!, handler.GetType().Name, errorMessage);
+                        if (!hasBeenHandled && daprEventCache != null)
+                            await daprEventCache.UpdateEventAsync(@event!, handler.GetType().Name, errorMessage);
                     }
                     
                     // If any handler has thrown an exception, return 500 so Dapr can retry sending the message.

@@ -47,8 +47,8 @@ public static class ServiceCollectionExtensions
 
         if (!daprEventCacheOptions.EnableEventCache) return services;
         services.AddSingleton<IEventCache, DaprEventCache>();
-        services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
-            MongoEventHandlingRepository<DaprIntegrationEvent>>();
+        services.AddSingleton<IEventHandlingRepository<IntegrationEvent>,
+            MongoEventHandlingRepository<IntegrationEvent>>();
         services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
         return services.AddMongoDbSettings<DaprStoreDatabaseSettings, EventWrapperDto>(configuration);
     }
@@ -88,8 +88,8 @@ public static class ServiceCollectionExtensions
 
         if (!daprEventCacheOptions.EnableEventCache) return services;
         services.AddSingleton<IEventCache, DaprEventCache>();
-        services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
-            MongoEventHandlingRepository<DaprIntegrationEvent>>();
+        services.AddSingleton<IEventHandlingRepository<IntegrationEvent>,
+            MongoEventHandlingRepository<IntegrationEvent>>();
         services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
         return services.AddDaprStoreDatabaseSettings(configureDaprStoreOptions);
     }
