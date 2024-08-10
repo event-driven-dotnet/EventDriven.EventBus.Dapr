@@ -46,8 +46,8 @@ public static class ServiceCollectionExtensions
 
         if (!eventCacheOptions.EnableEventCache) return services;
         services.AddSingleton<IEventCache, MongoEventCache>();
-        services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
-            MongoEventHandlingRepository<DaprIntegrationEvent>>();
+        services.AddSingleton<IEventHandlingRepository<IntegrationEvent>,
+            MongoEventHandlingRepository<IntegrationEvent>>();
         services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
         return services.AddMongoDbSettings<MongoStoreDatabaseSettings, EventWrapperDto>(configuration);
     }
@@ -82,8 +82,8 @@ public static class ServiceCollectionExtensions
 
         if (!eventCacheOptions.EnableEventCache) return services;
         services.AddSingleton<IEventCache, MongoEventCache>();
-        services.AddSingleton<IEventHandlingRepository<DaprIntegrationEvent>,
-            MongoEventHandlingRepository<DaprIntegrationEvent>>();
+        services.AddSingleton<IEventHandlingRepository<IntegrationEvent>,
+            MongoEventHandlingRepository<IntegrationEvent>>();
         services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
         return services.AddMongoStoreDatabaseSettings(configureMongoStoreOptions);
     }

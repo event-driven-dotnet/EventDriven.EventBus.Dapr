@@ -7,7 +7,7 @@ An event bus abstraction over Dapr pub/sub.
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - [MongoDB Docker](https://hub.docker.com/_/mongo): `docker run --name mongo -d -p 27017:27017 -v /tmp/mongo/data:/data/db mongo`
 - [MongoDB Client](https://robomongo.org/download):
-  - Download Robo 3T only.
+  - Download Studio 3T.
   - Add connection to localhost on port 27017.
 
 ## Introduction
@@ -21,7 +21,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
 ## Packages
 - [EventDriven.EventBus.Abstractions](https://www.nuget.org/packages/EventDriven.EventBus.Abstractions)
 - [EventDriven.EventBus.Dapr](https://www.nuget.org/packages/EventDriven.EventBus.Dapr)
-- [EventDriven.EventBus.Dapr.EventCache.Mongo](https://www.nuget.org/packages/EventDriven.EventBus.Dapr.EventCache.Mongo)
+- [EventDriven.EventBus.EventCache.Mongo](https://www.nuget.org/packages/EventDriven.EventBus.EventCache.Mongo)
 - [EventDriven.SchemaRegistry.Mongo](https://www.nuget.org/packages/EventDriven.SchemaRegistry.Mongo)
 
 ## Usage
@@ -32,12 +32,10 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     "DaprEventBusOptions": {
       "PubSubName": "pubsub"
     },
-    "DaprEventCacheOptions": {
-      "DaprStateStoreOptions": {
-        "StateStoreName": "statestore-mongodb"
-      }
+    "MongoEventCacheOptions": {
+      "AppName": "subscriber"
     },
-    "DaprStoreDatabaseSettings": {
+    "MongoStoreDatabaseSettings": {
       "ConnectionString": "mongodb://localhost:27017",
       "DatabaseName": "daprStore",
       "CollectionName": "daprCollection"
@@ -63,7 +61,7 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
         services.AddDaprEventBus(Configuration);
 
         // Add Dapr Mongo event cache
-        services.AddDaprMongoEventCache(Configuration);
+        services.AddMongoEventCache(Configuration);
     }
     ```
 
@@ -185,7 +183,7 @@ The **samples** folder contains two sample applications which use the Dapr Event
 
 ### EventDriven.EventBus.Abstractions
 
-The **EventDriven.EventBus.Abstractions** package includes interfaces and abstract classes which provide an abstraction layer for interacting with any messsaging subsystem. This allows you to potentially exchange the [Dapr](https://dapr.io/) implementation with another one, such as [NServiceBus](https://particular.net/nservicebus) or [MassTransit](https://masstransit-project.com/), _without altering application code_.
+The **EventDriven.EventBus.Abstractions** package includes interfaces and abstract classes which provide an abstraction layer for interacting with any messsaging subsystem. This allows you to potentially exchange the [Dapr](https://dapr.io/) implementation with another one _without altering application code_.
 
 This package contains an `IEventBus` interface implemented by an `EventBus` abstract class.
 
