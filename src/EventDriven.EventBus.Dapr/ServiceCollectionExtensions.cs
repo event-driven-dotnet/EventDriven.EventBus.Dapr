@@ -31,8 +31,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="T:IServiceCollection" /></param>
         /// <param name="configuration">The application's <see cref="IConfiguration"/>.</param>
+        /// <param name="lifetime">Service lifetime.</param>
         /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
-        public static IServiceCollection AddDaprEventBus(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDaprEventBus(
+            this IServiceCollection services, IConfiguration configuration,
+            ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {
             var daprEventBusOptions = new DaprEventBusOptions();
             var daprOptionsConfigSection = configuration.GetSection(nameof(DaprEventBusOptions));
@@ -56,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.AddSchemaOnPublish = eventBusSchemaOptions.AddSchemaOnPublish;
                 };
             }
-            return services.AddDaprEventBus(daprEventBusOptions.PubSubName, configureSchemaOptions);
+            return services.AddDaprEventBus(daprEventBusOptions.PubSubName, configureSchemaOptions, lifetime);
         }
 
         /// <summary>
@@ -65,13 +68,28 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="T:IServiceCollection" /></param>
         /// <param name="pubSubName">The name of the pub sub component to use.</param>
         /// <param name="configureSchemaOptions">Configure schema registry options.</param>
+        /// <param name="lifetime">Service lifetime.</param>
         /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
         public static IServiceCollection AddDaprEventBus(this IServiceCollection services, string pubSubName,
-            Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null)
+            Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null,
+            ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {
             services.AddDaprClient();
             if (configureSchemaOptions == null)
-                services.AddSingleton<IEventBus, DaprEventBus>();
+            {
+                switch (lifetime)
+                {
+                    case ServiceLifetime.Transient:
+                        services.AddTransient<IEventBus, DaprEventBus>();
+                        break;
+                    case ServiceLifetime.Scoped:
+                        services.AddScoped<IEventBus, DaprEventBus>();
+                        break;
+                    default:
+                        services.AddSingleton<IEventBus, DaprEventBus>();
+                        break;
+                }
+            }
             else
             {
                 var schemaOptions = new DaprEventBusSchemaOptions
@@ -81,18 +99,44 @@ namespace Microsoft.Extensions.DependencyInjection
                 };
                 configureSchemaOptions(schemaOptions);
                 if (!schemaOptions.UseSchemaRegistry)
-                    services.AddSingleton<IEventBus, DaprEventBus>();
+                {
+                    switch (lifetime)
+                    {
+                        case ServiceLifetime.Transient:
+                            services.AddTransient<IEventBus, DaprEventBus>();
+                            break;
+                        case ServiceLifetime.Scoped:
+                            services.AddScoped<IEventBus, DaprEventBus>();
+                            break;
+                        default:
+                            services.AddSingleton<IEventBus, DaprEventBus>();
+                            break;
+                    }
+                }
                 else
                 {
-                    services.AddSingleton<IEventBus, DaprEventBusWithSchemaRegistry>();
-                    services.AddDaprEventBusSchema(configureSchemaOptions);
+                    switch (lifetime)
+                    {
+                        case ServiceLifetime.Transient:
+                            services.AddTransient<IEventBus, DaprEventBusWithSchemaRegistry>();
+                            break;
+                        case ServiceLifetime.Scoped:
+                            services.AddScoped<IEventBus, DaprEventBusWithSchemaRegistry>();
+                            break;
+                        default:
+                            services.AddSingleton<IEventBus, DaprEventBusWithSchemaRegistry>();
+                            break;
+                    }
+                    services.AddDaprEventBusSchema(configureSchemaOptions, lifetime);
                 }
             }
+
             return services.Configure<DaprEventBusOptions>(options => options.PubSubName = pubSubName);
         }
 
         private static IServiceCollection AddDaprEventBusSchema(this IServiceCollection services,
-            Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null)
+            Action<DaprEventBusSchemaOptions>? configureSchemaOptions = null,
+            ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {
             if (configureSchemaOptions == null) return services;
             var schemaOptions = new DaprEventBusSchemaOptions
@@ -106,8 +150,21 @@ namespace Microsoft.Extensions.DependencyInjection
             if (!schemaOptions.UseSchemaRegistry) return services;
             if (schemaOptions.SchemaValidatorType == SchemaValidatorType.Json)
             {
-                services.AddSingleton<ISchemaGenerator, JsonSchemaGenerator>();
-                services.AddSingleton<ISchemaValidator, JsonSchemaValidator>();
+                switch (lifetime)
+                {
+                    case ServiceLifetime.Transient:
+                        services.AddTransient<ISchemaGenerator, JsonSchemaGenerator>();
+                        services.AddTransient<ISchemaValidator, JsonSchemaValidator>();
+                        break;
+                    case ServiceLifetime.Scoped:
+                        services.AddScoped<ISchemaGenerator, JsonSchemaGenerator>();
+                        services.AddScoped<ISchemaValidator, JsonSchemaValidator>();
+                        break;
+                    default:
+                        services.AddSingleton<ISchemaGenerator, JsonSchemaGenerator>();
+                        services.AddSingleton<ISchemaValidator, JsonSchemaValidator>();
+                        break;
+                }
             }
 
             switch (schemaOptions.SchemaRegistryType)
@@ -118,7 +175,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.ConnectionString = schemaOptions.MongoStateStoreOptions.ConnectionString;
                         options.DatabaseName = schemaOptions.MongoStateStoreOptions.DatabaseName;
                         options.CollectionName = schemaOptions.MongoStateStoreOptions.CollectionName;
-                    });
+                    }, lifetime);
                     break;
             }
             return services;
