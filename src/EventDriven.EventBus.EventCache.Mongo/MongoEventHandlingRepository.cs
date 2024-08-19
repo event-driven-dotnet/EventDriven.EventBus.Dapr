@@ -81,7 +81,7 @@ public class MongoEventHandlingRepository<TIntegrationEvent> :
 
     /// <inheritdoc />
     public async Task<EventWrapper<TIntegrationEvent>> AddOrUpdateEventAsync(string appName, string eventId, EventHandling eventHandling,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = default)
     {
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var id = $"{appName.ToLower()}||{eventId}";

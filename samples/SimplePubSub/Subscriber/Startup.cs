@@ -1,4 +1,4 @@
-using EventDriven.EventBus.Dapr;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -35,15 +35,17 @@ namespace Subscriber
             // Add handlers
             services.AddSingleton<WeatherForecastEventHandler>();
 
-            // Configuration
-            var eventBusOptions = new DaprEventBusOptions();
-            Configuration.GetSection(nameof(DaprEventBusOptions)).Bind(eventBusOptions);
-
             // Add Dapr event bus
-            services.AddDaprEventBus(eventBusOptions.PubSubName);
+            services.AddDaprEventBus(Configuration);
             
-            // Add Mongo event cache
-            services.AddMongoEventCache(Configuration);
+            // Add Redis event cache
+            services.AddRedisEventCache(Configuration);
+            // services.AddRedisEventCache(options => options.AppName = "subscriber",
+            //     options =>
+            //     {
+            //         options.ConnectionString = "localhost:6379";
+            //         options.DistributedCacheEntryOptions.SlidingExpiration = TimeSpan.FromMinutes(5);
+            //     });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

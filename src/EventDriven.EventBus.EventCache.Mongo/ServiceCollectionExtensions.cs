@@ -19,60 +19,58 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The <see cref="T:IServiceCollection" /></param>
     /// <param name="configuration">The application's <see cref="IConfiguration"/>.</param>
+    /// <param name="lifetime">Service lifetime.</param>
     /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
     public static IServiceCollection AddMongoEventCache(this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration, ServiceLifetime lifetime = ServiceLifetime.Singleton)
     {
-        var eventCacheOptions = new MongoEventCacheOptions
+        var eventCacheOptions = new EventCacheOptions
         {
             EnableEventCacheCleanup = true,
         };
-        var mongoOptionsConfigSection = configuration.GetSection(nameof(MongoEventCacheOptions));
+        var mongoOptionsConfigSection = configuration.GetSection("MongoEventCacheOptions");
         mongoOptionsConfigSection.Bind(eventCacheOptions);
         if (!mongoOptionsConfigSection.Exists())
-            throw new Exception($"Configuration section '{nameof(MongoEventCacheOptions)}' not present in app settings.");
+            throw new Exception("Configuration section 'MongoEventCacheOptions' not present in app settings.");
         if (eventCacheOptions.EnableEventCache && string.IsNullOrWhiteSpace(eventCacheOptions.AppName))
-            throw new Exception($"Configuration section 'MongoEventCacheOptions:AppName' must be specified.");
-
-        services.Configure<MongoEventCacheOptions>(options =>
-        {
-            options.AppName = eventCacheOptions.AppName;
-            options.EnableEventCache = eventCacheOptions.EnableEventCache;
-            options.EventCacheTimeout = eventCacheOptions.EventCacheTimeout;
-            options.EnableEventCacheCleanup = eventCacheOptions.EnableEventCacheCleanup;
-            options.EventCacheCleanupInterval = eventCacheOptions.EventCacheCleanupInterval;
-        });
-        services.AddSingleton<EventCacheOptions>(eventCacheOptions);
+            throw new Exception("Configuration section 'MongoEventCacheOptions:AppName' must be specified.");
 
         if (!eventCacheOptions.EnableEventCache) return services;
-        services.AddSingleton<IEventCache, MongoEventCache>();
-        services.AddSingleton<IEventHandlingRepository<IntegrationEvent>,
-            MongoEventHandlingRepository<IntegrationEvent>>();
-        services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
-        return services.AddMongoDbSettings<MongoStoreDatabaseSettings, EventWrapperDto>(configuration);
+
+        services.AddEventCacheImpl(eventCacheOptions, lifetime);
+        return services.AddMongoDbSettings<MongoStoreDatabaseSettings, EventWrapperDto>(configuration, lifetime);
     }
 
     /// <summary>
     /// Add Mongo event cache to the provided <see cref="T:IServiceCollection" />.
     /// </summary>
     /// <param name="services">The <see cref="T:IServiceCollection" /></param>
-    /// <param name="configureMongoStoreOptions">Configure Mongo store options.</param>
     /// <param name="configureEventCacheOptions">Configure event cache options.</param>
+    /// <param name="configureMongoStoreOptions">Configure Mongo store options.</param>
     /// <param name="lifetime">Service lifetime.</param>
     /// <returns>The original <see cref="T:IServiceCollection" />.</returns>
     public static IServiceCollection AddMongoEventCache(this IServiceCollection services,
+        Action<EventCacheOptions>? configureEventCacheOptions = null,
         Action<MongoStoreDatabaseSettings>? configureMongoStoreOptions = null,
-        Action<MongoEventCacheOptions>? configureEventCacheOptions = null,
         ServiceLifetime lifetime = ServiceLifetime.Singleton)
     {
-        var eventCacheOptions = new MongoEventCacheOptions
+        var eventCacheOptions = new EventCacheOptions
         {
             EnableEventCache = true,
             EnableEventCacheCleanup = true
         };
-
         configureEventCacheOptions?.Invoke(eventCacheOptions);
-        services.Configure<MongoEventCacheOptions>(options =>
+        if (!eventCacheOptions.EnableEventCache) return services;
+
+        services.AddEventCacheImpl(eventCacheOptions, lifetime);
+        return services.AddMongoStoreDatabaseSettings(configureMongoStoreOptions, lifetime);
+    }
+
+    private static IServiceCollection AddEventCacheImpl(this IServiceCollection services,
+        EventCacheOptions eventCacheOptions,
+        ServiceLifetime lifetime)
+    {
+        services.Configure<EventCacheOptions>(options =>
         {
             options.AppName = eventCacheOptions.AppName;
             options.EnableEventCache = eventCacheOptions.EnableEventCache;
@@ -85,7 +83,6 @@ public static class ServiceCollectionExtensions
         {
             case ServiceLifetime.Transient:
                 services.AddTransient<EventCacheOptions>();
-                if (!eventCacheOptions.EnableEventCache) return services;
                 services.AddTransient<IEventCache, MongoEventCache>();
                 services.AddTransient<IEventHandlingRepository<IntegrationEvent>,
                     MongoEventHandlingRepository<IntegrationEvent>>();
@@ -93,23 +90,21 @@ public static class ServiceCollectionExtensions
                 break;
             case ServiceLifetime.Scoped:
                 services.AddScoped<EventCacheOptions>();
-                if (!eventCacheOptions.EnableEventCache) return services;
                 services.AddScoped<IEventCache, MongoEventCache>();
                 services.AddScoped<IEventHandlingRepository<IntegrationEvent>,
                     MongoEventHandlingRepository<IntegrationEvent>>();
                 services.AddScoped<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
                 break;
             default:
-                services.AddSingleton<EventCacheOptions>(eventCacheOptions);
-                if (!eventCacheOptions.EnableEventCache) return services;
+                services.AddSingleton(eventCacheOptions);
                 services.AddSingleton<IEventCache, MongoEventCache>();
                 services.AddSingleton<IEventHandlingRepository<IntegrationEvent>,
                     MongoEventHandlingRepository<IntegrationEvent>>();
                 services.AddSingleton<IDocumentRepository<EventWrapperDto>, DocumentRepository<EventWrapperDto>>();
                 break;
         }
-        
-        return services.AddMongoStoreDatabaseSettings(configureMongoStoreOptions, lifetime);
+
+        return services;
     }
 
     private static IServiceCollection AddMongoStoreDatabaseSettings(this IServiceCollection services,

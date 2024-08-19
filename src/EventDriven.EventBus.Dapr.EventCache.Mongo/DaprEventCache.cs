@@ -1,7 +1,6 @@
 using AsyncKeyedLock;
 using Dapr.Client;
 using EventDriven.EventBus.Abstractions;
-using EventDriven.EventBus.EventCache.Mongo;
 using Microsoft.Extensions.Options;
 
 namespace EventDriven.EventBus.Dapr.EventCache.Mongo;
