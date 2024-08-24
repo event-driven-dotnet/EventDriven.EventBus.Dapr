@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>1.5.0-beta2</Version>
+        <Version>1.5.0</Version>
         <Authors>Tony Sneed</Authors>
         <Description>A MongoDB implementation of event caching.</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -14,7 +14,7 @@
         <RepositoryUrl>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>event-bus event-cache event-driven event-driven-architecture</PackageTags>
-        <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.5.0-beta2</PackageReleaseNotes>
+        <PackageReleaseNotes>https://github.com/event-driven-dotnet/EventDriven.EventBus.Dapr/releases/tag/v1.5.0</PackageReleaseNotes>
         <PackageId>EventDriven.EventBus.EventCache.Mongo</PackageId>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
@@ -22,7 +22,7 @@
     <ItemGroup>
         <PackageReference Include="AsyncKeyedLock" Version="7.0.0" />
         <PackageReference Include="EventDriven.DependencyInjection.URF.Mongo" Version="1.2.2" />
-        <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.5.0-beta2" />
+        <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.5.0" />
         <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
         <PackageReference Include="URF.Core.Mongo" Version="7.0.0" />
     </ItemGroup>

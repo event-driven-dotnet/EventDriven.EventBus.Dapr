@@ -39,13 +39,13 @@ namespace Subscriber
             services.AddDaprEventBus(Configuration);
             
             // Add Redis event cache
-            services.AddRedisEventCache(Configuration);
-            // services.AddRedisEventCache(options => options.AppName = "subscriber",
-            //     options =>
-            //     {
-            //         options.ConnectionString = "localhost:6379";
-            //         options.DistributedCacheEntryOptions.SlidingExpiration = TimeSpan.FromMinutes(5);
-            //     });
+            // services.AddRedisEventCache(Configuration);
+            services.AddRedisEventCache(options => options.AppName = "subscriber",
+                options =>
+                {
+                    options.ConnectionString = "localhost:6379";
+                    options.DistributedCacheEntryOptions.SlidingExpiration = TimeSpan.FromMinutes(5);
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
