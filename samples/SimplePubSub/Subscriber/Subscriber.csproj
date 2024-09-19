@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\EventDriven.EventBus.Dapr\EventDriven.EventBus.Dapr.csproj" />
     <ProjectReference Include="..\..\..\src\EventDriven.EventBus.EventCache.Redis\EventDriven.EventBus.EventCache.Redis.csproj" />
+    <ProjectReference Include="..\SimplePubSub.ServiceDefaults\SimplePubSub.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

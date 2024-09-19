@@ -2,7 +2,7 @@
   "profiles": {
     "Frontend": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5121",
       "environmentVariables": {

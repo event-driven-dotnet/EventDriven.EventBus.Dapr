@@ -9,6 +9,12 @@ An event bus abstraction over Dapr pub/sub.
 - [MongoDB Client](https://robomongo.org/download):
   - Download Studio 3T.
   - Add connection to localhost on port 27017.
+- [.NET Aspire Workload](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/setup-tooling?tabs=dotnet-cli#install-net-aspire)
+  ```
+  dotnet workload update
+  dotnet workload install aspire
+  dotnet workload list
+  ```
 
 ## Introduction
 
@@ -52,17 +58,11 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
       }
     }
     ```
-   - Call `services.AddDaprEventBus` in `Startup.ConfigureServices`.
-   - Then call `services.AddDaprMongoEventCache`.
+   - Call `builder.Services.AddDaprEventBus` in `Program`.
+   - Then call `builder.Services.AddRedisEventCache`.
     ```csharp
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // Add Dapr Event Bus
-        services.AddDaprEventBus(Configuration);
-
-        // Add Dapr Mongo event cache
-        services.AddMongoEventCache(Configuration);
-    }
+    builder.Services.AddDaprEventBus(builder.Configuration);
+    builder.Services.AddRedisEventCache(builder.Configuration);
     ```
 
 1. Define a [C# record](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/exploration/records) that extends `IntegrationEvent`. For example, the following `WeatherForecastEvent` record does so by adding a `WeatherForecasts` property.
@@ -117,28 +117,26 @@ The purpose of the **Dapr Event Bus** project is to provide a thin abstraction l
     }
     ```
 
-4. Lastly, in `Startup.Configure` in `app.UseEndpoints` call `endpoints.MapDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
+4. Lastly, in `app.UseEndpoints` call `endpoints.MapDaprEventBus`, passing an action that subscribes to `DaprEventBus` events with one or more event handlers.
    - Also call `app.UseRouting`, `app.UseCloudEvents`, `endpoints.MapSubscribeHandler`.
-   - Make sure to add parameters to `Startup.Configure` to inject each handler you wish to use.
-   - For example, to add the weather forecast handler, you must add a `WeatherForecastEventHandler` parameter to the `Configure` method.
 
     ```csharp
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
-        WeatherForecastEventHandler forecastEventHandler)
+    app.UseRouting();
+    app.UseCloudEvents();
+
+    #pragma warning disable ASP0014 // Need to use endpoints to map event bus
+    app.UseEndpoints(endpoints =>
     {
-        app.UseRouting();
-        app.UseCloudEvents();
-        app.UseEndpoints(endpoints =>
+        endpoints.MapControllers();
+        endpoints.MapSubscribeHandler();
+        endpoints.MapDaprEventBus(eventBus =>
         {
-            // Map SubscribeHandler and DapEventBus
-            endpoints.MapSubscribeHandler();
-            endpoints.MapDaprEventBus(eventBus =>
-            {
-                // Subscribe with a handler
-                eventBus.Subscribe(forecastGeneratedEventHandler);
-            });
+            // Subscribe with a handler
+            var forecastEventHandler = app.Services.GetRequiredService<WeatherForecastEventHandler>();
+            eventBus.Subscribe(forecastEventHandler, null, "v1");
         });
-    }
+    });
+    #pragma warning restore ASP0014
     ```
 
 ## Schema Registry

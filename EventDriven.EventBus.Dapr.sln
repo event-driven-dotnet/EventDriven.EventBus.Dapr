@@ -15,7 +15,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimplePubSub", "SimplePubSub", "{3C914E34-8776-49E0-B27B-9799514C8E3B}"
 	ProjectSection(SolutionItems) = preProject
 		samples\SimplePubSub\ReadMe.md = samples\SimplePubSub\ReadMe.md
-		samples\SimplePubSub\tye.yaml = samples\SimplePubSub\tye.yaml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Publisher", "samples\SimplePubSub\Publisher\Publisher.csproj", "{93366A73-19AA-489A-A706-8C46521A0C06}"
@@ -25,7 +24,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DuplexPubSub", "DuplexPubSub", "{47FF70C6-3ECE-4D1B-9793-C480B689485D}"
 	ProjectSection(SolutionItems) = preProject
 		samples\DuplexPubSub\ReadMe.md = samples\DuplexPubSub\ReadMe.md
-		samples\DuplexPubSub\tye.yaml = samples\DuplexPubSub\tye.yaml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "samples\DuplexPubSub\Backend\Backend.csproj", "{6373EEB8-F273-44AC-8C14-EFC41DC0FE35}"
@@ -73,6 +71,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDriven.EventBus.EventCache.Redis", "src\EventDriven.EventBus.EventCache.Redis\EventDriven.EventBus.EventCache.Redis.csproj", "{8E3583F1-E4CA-46C7-9A53-121DE465A6B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDriven.EventBus.EventCache.Core", "src\EventDriven.EventBus.EventCache.Core\EventDriven.EventBus.EventCache.Core.csproj", "{9417B39B-E079-4D75-8C3A-1AA9FF0264C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePubSub.ServiceDefaults", "samples\SimplePubSub\SimplePubSub.ServiceDefaults\SimplePubSub.ServiceDefaults.csproj", "{CC688483-8114-4636-8923-49B9D78C4394}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePubSub.AppHost", "samples\SimplePubSub\SimplePubSub.AppHost\SimplePubSub.AppHost.csproj", "{473E0DD8-8301-4765-9454-A4EA072DBFD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplexPubSub.ServiceDefaults", "samples\DuplexPubSub\DuplexPubSub.ServiceDefaults\DuplexPubSub.ServiceDefaults.csproj", "{24DF206C-599B-412F-8CAD-5F1C2E73F5EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplexPubSub.AppHost", "samples\DuplexPubSub\DuplexPubSub.AppHost\DuplexPubSub.AppHost.csproj", "{7A34ACA0-DE3B-46DA-9CD7-C5E36F3DAEC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -124,6 +130,22 @@ Global
 		{9417B39B-E079-4D75-8C3A-1AA9FF0264C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9417B39B-E079-4D75-8C3A-1AA9FF0264C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9417B39B-E079-4D75-8C3A-1AA9FF0264C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC688483-8114-4636-8923-49B9D78C4394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC688483-8114-4636-8923-49B9D78C4394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC688483-8114-4636-8923-49B9D78C4394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC688483-8114-4636-8923-49B9D78C4394}.Release|Any CPU.Build.0 = Release|Any CPU
+		{473E0DD8-8301-4765-9454-A4EA072DBFD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{473E0DD8-8301-4765-9454-A4EA072DBFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{473E0DD8-8301-4765-9454-A4EA072DBFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{473E0DD8-8301-4765-9454-A4EA072DBFD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24DF206C-599B-412F-8CAD-5F1C2E73F5EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24DF206C-599B-412F-8CAD-5F1C2E73F5EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24DF206C-599B-412F-8CAD-5F1C2E73F5EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24DF206C-599B-412F-8CAD-5F1C2E73F5EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A34ACA0-DE3B-46DA-9CD7-C5E36F3DAEC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A34ACA0-DE3B-46DA-9CD7-C5E36F3DAEC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A34ACA0-DE3B-46DA-9CD7-C5E36F3DAEC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A34ACA0-DE3B-46DA-9CD7-C5E36F3DAEC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,6 +170,10 @@ Global
 		{18591207-FD1A-4E38-9331-6126D2938F74} = {BA9F4C61-03E7-4616-986F-83AE2B651D3D}
 		{8E3583F1-E4CA-46C7-9A53-121DE465A6B8} = {BA9F4C61-03E7-4616-986F-83AE2B651D3D}
 		{9417B39B-E079-4D75-8C3A-1AA9FF0264C7} = {BA9F4C61-03E7-4616-986F-83AE2B651D3D}
+		{CC688483-8114-4636-8923-49B9D78C4394} = {3C914E34-8776-49E0-B27B-9799514C8E3B}
+		{473E0DD8-8301-4765-9454-A4EA072DBFD0} = {3C914E34-8776-49E0-B27B-9799514C8E3B}
+		{24DF206C-599B-412F-8CAD-5F1C2E73F5EA} = {47FF70C6-3ECE-4D1B-9793-C480B689485D}
+		{7A34ACA0-DE3B-46DA-9CD7-C5E36F3DAEC6} = {47FF70C6-3ECE-4D1B-9793-C480B689485D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {93F3F415-3CCF-42AC-B64E-040C58946A7A}

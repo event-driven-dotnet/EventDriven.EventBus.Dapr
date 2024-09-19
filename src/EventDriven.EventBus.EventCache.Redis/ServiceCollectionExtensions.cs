@@ -46,8 +46,8 @@ public static class ServiceCollectionExtensions
         {
             var redisSettingsSection = configuration.GetSection(nameof(RedisEventCacheSettings));
             var redisSettings = redisSettingsSection.Get<RedisEventCacheSettings>();
-            option.Configuration = redisSettings.ConnectionString;
-            option.InstanceName = redisSettings.InstanceName;
+            option.Configuration = redisSettings?.ConnectionString;
+            option.InstanceName = redisSettings?.InstanceName;
         });
     }
 
