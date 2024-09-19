@@ -1,10 +1,8 @@
 ﻿{
   "profiles": {
-    "Backend": {
+    "Generator": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
+      "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5321",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
