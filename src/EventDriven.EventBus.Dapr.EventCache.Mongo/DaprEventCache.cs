@@ -12,7 +12,7 @@ public class DaprEventCache : IEventCache
     private readonly AsyncNonKeyedLocker _syncRoot = new();
     private readonly DaprEventCacheOptions _eventCacheOptions;
     private readonly IEventHandlingRepository<IntegrationEvent> _eventHandlingRepository;
-    
+
     /// <summary>
     /// Cleanup timer.
     /// </summary>
@@ -36,7 +36,7 @@ public class DaprEventCache : IEventCache
     /// <param name="eventHandlingRepository">Event handling repository.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     public DaprEventCache(
-        DaprClient dapr, 
+        DaprClient dapr,
         IOptions<DaprEventCacheOptions> eventCacheOptions,
         IEventHandlingRepository<IntegrationEvent> eventHandlingRepository,
         CancellationToken cancellationToken = default)
@@ -48,9 +48,9 @@ public class DaprEventCache : IEventCache
         if (_eventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
             _eventCacheOptions.EnableEventCacheCleanup)
         {
-            CleanupTimer = new Timer(TimerCallback!, null, TimeSpan.Zero, 
+            CleanupTimer = new Timer(TimerCallback!, null, TimeSpan.Zero,
                 _eventCacheOptions.EventCacheCleanupInterval);
-            ErrorsCleanupTimer = new Timer(ErrorsTimerCallback, null, TimeSpan.Zero, 
+            ErrorsCleanupTimer = new Timer(ErrorsTimerCallback, null, TimeSpan.Zero,
                 _eventCacheOptions.EventErrorsCacheCleanupInterval);
         }
         return;
@@ -64,26 +64,24 @@ public class DaprEventCache : IEventCache
     /// <returns>Task that will complete when the operation has completed.</returns>
     protected virtual async Task CleanupEventCacheAsync()
     {
-        using (await _syncRoot.LockAsync(CancellationToken))
+        using var _ = await _syncRoot.LockAsync(CancellationToken);
+        // End timer and exit if cache cleanup disabled or cancellation pending
+        if (!(_eventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
+              _eventCacheOptions.EnableEventCacheCleanup)
+            || CancellationToken.IsCancellationRequested)
         {
-            // End timer and exit if cache cleanup disabled or cancellation pending
-            if (!(_eventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
-                  _eventCacheOptions.EnableEventCacheCleanup)
-                || CancellationToken.IsCancellationRequested)
-            {
-                if (CleanupTimer != null) await CleanupTimer.DisposeAsync();
-                return;
-            }
-            
-            // Remove expired events without errors
-            var events = 
-                await _eventHandlingRepository.GetExpiredEventsAsync(null, true, CancellationToken);
-            foreach (var @event in events)
-            {
-                if (@event.Value != null)
-                    await _dapr.DeleteStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
-                        @event.Value.EventId, null, null, CancellationToken);
-            }
+            if (CleanupTimer != null) await CleanupTimer.DisposeAsync();
+            return;
+        }
+
+        // Remove expired events without errors
+        var events =
+            await _eventHandlingRepository.GetExpiredEventsAsync(null, true, CancellationToken);
+        foreach (var @event in events)
+        {
+            if (@event.Value != null)
+                await _dapr.DeleteStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
+                    @event.Value.EventId, null, null, CancellationToken);
         }
     }
 
@@ -93,26 +91,24 @@ public class DaprEventCache : IEventCache
     /// <returns>Task that will complete when the operation has completed.</returns>
     protected virtual async Task CleanupEventCacheErrorsAsync()
     {
-        using (await _syncRoot.LockAsync(CancellationToken))
+        using var _ = await _syncRoot.LockAsync(CancellationToken);
+        // End timer and exit if cache cleanup disabled or cancellation pending
+        if (!(_eventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
+              _eventCacheOptions.EnableEventCacheCleanup)
+            || CancellationToken.IsCancellationRequested)
         {
-            // End timer and exit if cache cleanup disabled or cancellation pending
-            if (!(_eventCacheOptions.DaprEventCacheType == DaprEventCacheType.Queryable &&
-                  _eventCacheOptions.EnableEventCacheCleanup)
-                || CancellationToken.IsCancellationRequested)
-            {
-                if (ErrorsCleanupTimer != null) await ErrorsCleanupTimer.DisposeAsync();
-                return;
-            }
-            
-            // Remove expired events with errors
-            var events = 
-                await _eventHandlingRepository.GetExpiredEventsAsync(null, false, CancellationToken);
-            foreach (var @event in events)
-            {
-                if (@event.Value != null)
-                    await _dapr.DeleteStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
-                        @event.Value.EventId, null, null, CancellationToken);
-            }
+            if (ErrorsCleanupTimer != null) await ErrorsCleanupTimer.DisposeAsync();
+            return;
+        }
+
+        // Remove expired events with errors
+        var events =
+            await _eventHandlingRepository.GetExpiredEventsAsync(null, false, CancellationToken);
+        foreach (var @event in events)
+        {
+            if (@event.Value != null)
+                await _dapr.DeleteStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
+                    @event.Value.EventId, null, null, CancellationToken);
         }
     }
 
@@ -121,10 +117,10 @@ public class DaprEventCache : IEventCache
     {
         // Return false if not enabled
         if (!_eventCacheOptions.EnableEventCache) return false;
-        
+
         // Return true if event exists, is not expired, and handler has no error
         var wrapper = await _dapr.GetStateAsync<EventHandling>(_eventCacheOptions
-            .DaprStateStoreOptions.StateStoreName, @event.Id, null, null, CancellationToken);            
+            .DaprStateStoreOptions.StateStoreName, @event.Id, null, null, CancellationToken);
         return wrapper is not null && HasBeenHandledImpl(wrapper, handlerTypeName);
     }
 
@@ -132,37 +128,33 @@ public class DaprEventCache : IEventCache
     public virtual async Task AddEventAsync(IntegrationEvent @event,
         string? handlerTypeName = null, string? errorMessage = null)
     {
-        using (await _syncRoot.LockAsync(CancellationToken))
-        {
-            // Return if cache not enabled
-            if (!_eventCacheOptions.EnableEventCache) return;
-        
-            // Retrieve existing event
-            var wrapper = await _eventHandlingRepository.GetEventAsync(_eventCacheOptions
-                .DaprStateStoreOptions.StateStoreName, @event.Id, CancellationToken);
+        using var _ = await _syncRoot.LockAsync(CancellationToken);
+        // Return if cache not enabled
+        if (!_eventCacheOptions.EnableEventCache) return;
 
-            // Add event as completed with or without error to repository
-            await _dapr.SaveStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
-                @event.Id, wrapper, null, null, CancellationToken);
-        }
+        // Retrieve existing event
+        var wrapper = await _eventHandlingRepository.GetEventAsync(_eventCacheOptions
+            .DaprStateStoreOptions.StateStoreName, @event.Id, CancellationToken);
+
+        // Add event as completed with or without error to repository
+        await _dapr.SaveStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
+            @event.Id, wrapper, null, null, CancellationToken);
     }
 
     /// <inheritdoc />
     public async Task UpdateEventAsync(IntegrationEvent @event, string? handlerTypeName = null, string? errorMessage = null)
     {
-        using (await _syncRoot.LockAsync(CancellationToken))
-        {
-            // Return if cache not enabled
-            if (!_eventCacheOptions.EnableEventCache) return;
-        
-            // Retrieve existing event
-            var wrapper = await _eventHandlingRepository.GetEventAsync(_eventCacheOptions
-                .DaprStateStoreOptions.StateStoreName, @event.Id, CancellationToken);
+        using var _ = await _syncRoot.LockAsync(CancellationToken);
+        // Return if cache not enabled
+        if (!_eventCacheOptions.EnableEventCache) return;
 
-            // Add event as completed with or without error to repository
-            await _dapr.SaveStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
-                @event.Id, wrapper, null, null, CancellationToken);
-        }
+        // Retrieve existing event
+        var wrapper = await _eventHandlingRepository.GetEventAsync(_eventCacheOptions
+            .DaprStateStoreOptions.StateStoreName, @event.Id, CancellationToken);
+
+        // Add event as completed with or without error to repository
+        await _dapr.SaveStateAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
+            @event.Id, wrapper, null, null, CancellationToken);
     }
 
     /// <inheritdoc />
@@ -170,16 +162,16 @@ public class DaprEventCache : IEventCache
     {
         // Get event; return true if handled
         var wrapper = await _dapr.GetStateAsync<EventHandling>(_eventCacheOptions
-            .DaprStateStoreOptions.StateStoreName, @event.Id, null, null, CancellationToken);            
+            .DaprStateStoreOptions.StateStoreName, @event.Id, null, null, CancellationToken);
         if (wrapper is not null && handlerTypeName is not null
             && HasBeenHandledImpl(wrapper, handlerTypeName))
             return true;
-        
+
         // Add event as started to repository
         await AddEventImplAsync(wrapper, @event, handlerTypeName, null, HandlerState.Started);
         return false;
     }
-    
+
     private bool HasBeenHandledImpl(EventHandling? wrapper, string handlerTypeName)
     {
         var exists = wrapper != null;
@@ -221,7 +213,7 @@ public class DaprEventCache : IEventCache
                         ? errorMessage : null
                 });
         }
-        
+
         // Add event to repository
         await _eventHandlingRepository.AddEventAsync(_eventCacheOptions.DaprStateStoreOptions.StateStoreName,
             @event.Id, handling, CancellationToken);

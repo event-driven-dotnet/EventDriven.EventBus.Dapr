@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AsyncKeyedLock" Version="7.0.1" />
+      <PackageReference Include="AsyncKeyedLock" Version="8.0.2" />
       <PackageReference Include="EventDriven.EventBus.Abstractions" Version="1.5.0" />
       <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.8" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
